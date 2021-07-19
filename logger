@@ -4369,3 +4369,10 @@
 2021-07-19 17:57:10,979 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 17:57:10] "[33mGET /echarts.apache.org/www.googletagmanager.com/gtag/js?id=UA-141228404-1 HTTP/1.1[0m" 404 -
 2021-07-19 17:57:11,072 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 17:57:11] "[33mGET /echarts.apache.org/cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css.map HTTP/1.1[0m" 404 -
 2021-07-19 17:57:11,298 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 17:57:11] "[33mGET /echarts.apache.org/www.googletagmanager.com/gtag/js?id=UA-141228404-1 HTTP/1.1[0m" 404 -
+2021-07-19 18:03:22,055 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 18:03:22] "[37mGET /mv HTTP/1.1[0m" 200 -
+2021-07-19 18:03:22,097 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 18:03:22] "[33mGET /echarts.apache.org/www.googletagmanager.com/gtag/js?id=UA-141228404-1 HTTP/1.1[0m" 404 -
+2021-07-19 18:03:22,239 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 18:03:22] "[33mGET /echarts.apache.org/cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css.map HTTP/1.1[0m" 404 -
+2021-07-19 18:03:22,447 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 18:03:22] "[33mGET /echarts.apache.org/www.googletagmanager.com/gtag/js?id=UA-141228404-1 HTTP/1.1[0m" 404 -
+2021-07-19 18:03:24,364 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 18:03:24] "[37mGET /model_repository HTTP/1.1[0m" 200 -
+2021-07-19 18:03:34,313 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 18:03:34] "[37mPOST /b_html HTTP/1.1[0m" 200 -
+2021-07-19 18:03:43,609 INFO     werkzeug   127.0.0.1 - - [19/Jul/2021 18:03:43] "[37mPOST /b_html HTTP/1.1[0m" 200 -

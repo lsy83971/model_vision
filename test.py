@@ -50,8 +50,6 @@ sb.recorder.r_model_sample()
 sb.recorder.r_model_report()
 
 
-
-
 sb.recorder.load_sub_cond()["1"]["cond"]
 sb.recorder.load_bifurcate()
 
