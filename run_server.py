@@ -90,19 +90,21 @@ def get_b_html():
     ## print(_d)
     ## print("***************")
     ld = get_loader(_d)
-    html_path = ld.load_table("html_path").\
-        set_index("name")["html_path"]
+    html_path = pd.Series(ld.load_html_map())
     html_path = html_path.apply(cpath).to_dict()
     cmt = ld.load_table("comment").set_index("index")["comment"].  to_dict()
     try:
         bif_mean = ld.load_table("bifurcate").set_index("index")["bif_mean"].  to_dict()
         bif_porp = ld.load_table("bifurcate").set_index("index")["bif_porp"].  to_dict()
         bif_ent = ld.load_table("bifurcate").set_index("index")["bif_ent"].  to_dict()
+        names = sorted(html_path, lambda x:bif_ent.get(x, 0))
     except:
         bif_maen = dict()
         bif_porp = dict()
         bif_ent = dict()
+        names = sorted(html_path)
     return render_template('b_charts.html',
+                           names = names,
                            html_path = html_path,
                            cmt = cmt,
                            bif_mean = bif_mean,

@@ -4,6 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable="no">
     <meta name="description" content="ECharts, a powerful, interactive charting and visualization library for browser">
+    <script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
     <meta id='model_selector'>
     <link rel="stylesheet" type="text/css" href="echarts.apache.org/cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
     <link rel="shortcut icon" href="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/zh/images/favicon.png?_v_=20200710_1">
@@ -197,17 +198,26 @@
           $(obj).parent().toggleClass("charts-index-selected");
       };
 
-    </script>
 
+    </script>
+    <script>
+    function lsy_toggle_part(ele){
+        $(ele).each(function(){
+            if ($(this)[0].hasAttribute("hidden")){
+                $(this).removeAttr("hidden");
+            }else{
+                $(this).attr("hidden","");
+            }
+        })
+        $(ele)[0].scrollIntoView(true);
+        return false;
+    }
+    </script>
     <style type="text/css">/* Copyright 2014-present Evernote Corporation. All rights reserved. */
       .charts-index-selected {
           background-color:#9cd9f5;
       }
-
     </style>
-
-
-
     <link rel="stylesheet" href="uikit3/css/uikit.min.css"/>
 	<script src="uikit3/js/uikit.min.js"></script>
 	<script src="uikit3/js/uikit-icons.min.js"></script>
@@ -227,7 +237,6 @@
     </style>
     <link rel="stylesheet" href="echarts.apache.org/cdn.jsdelivr.net/npm/element-ui@2.13.2/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/css/example-bundle.css?_v_=4e03a5649f">
-    <script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
     <style type="text/css">/* Copyright 2014-present Evernote Corporation. All rights reserved. */
 
       @keyframes caretBlink {
@@ -401,6 +410,7 @@
           height: 36px;
       }
     </style>
+
   </head>
   <body class="   pace-done pace-done">
     <div class="pace  pace-inactive pace-inactive">
@@ -425,27 +435,19 @@
           <div id="navbar-collapse" class="collapse navbar-collapse">
             <ul class="nav navbar-nav navpbar-left">
               <li id="nav-index">
-                <a href="#">首页</a>
+                <a href="#">导航</a>
               </li>
-              <li id="nav-doc" class="dropdown">
-                <a href="#" data-toggle="dropdown" uk-toggle="target: #model_repository" type="button" class="dropdown-toggle">模型仓库<b class="caret"></b></a>
+              <li id="nav-doc">
+                <a onclick="lsy_toggle_part('#model_repository')">仓库<b class="caret"></b></a>
               </li>
-              <li id="nav-download" class="dropdown">
-                <a href="#" data-toggle="dropdown" class="dropdown-toggle">下载<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/download.html">下载</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/download-theme.html">主题下载</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/download-extension.html">扩展下载</a></li>
-                </ul>
+              <li id="nav-doc">
+                <a onclick="lsy_toggle_part('#b_charts')">分箱<b class="caret"></b></a>
               </li>
-              <li id="nav-examples" class="active"><a href="echarts.apache.org/echarts.apache.org/examples/zh/index.html">示例</a></li>
-              <li id="nav-resources">
-                <a href="#" data-toggle="dropdown" class="dropdown-toggle">资源<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/spreadsheet.html">表格工具</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/theme-builder.html">主题构建工具</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/cheat-sheet.html">术语速查手册</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/resources.html">更多资源</a></li></ul>
+              <li id="nav-doc">
+                <a onclick="lsy_toggle_part('#b_charts')">聚类<b class="caret"></b></a>
+              </li>
+              <li id="nav-doc">
+                <a onclick="lsy_toggle_part('#b_charts')">结果<b class="caret"></b></a>
               </li>
               <li id="nav-contribute">
                 <a href="#" data-toggle="dropdown" class="dropdown-toggle">社区<b class="caret"></b></a>
@@ -468,81 +470,49 @@
             <div id="left-container">
               <div id="left-chart-nav" class="uk-card uk-card-default uk-card-body">
                 <ul class="uk-nav-default uk-nav-parent-icon" uk-nav>
-                  <li class="uk-active"><a onclick="load_b_html()">折线图</a></li>
-                  <!--li class="uk-active"><a onclick="save_selected()">test</a></li-->
+                  <li class="uk-active"><a style='font-size:16;font-weight:900'>工具</a></li>
+                  <li class="uk-active"><a onclick="load_model_repository()">模型加载</a></li>
+                  <li class="uk-active"><a onclick="load_b_html()">绘制分箱</a></li>
                   <li class="uk-parent">
                     <a href="#">指标筛选</a>
                     <ul>
-                      <li>
-                      <form class="uk-grid-small uk-margin uk-margin-small-left uk-margin-small-right" uk-grid>
-                        <div class="uk-width-1-2@s">
-                          <input id="bif_mean_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="mean>=">
-                        </div>
-                        <div class="uk-width-1-2@s">
-                          <input id="bif_mean_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="mean<=">
-                        </div>
-                        <div class="uk-width-1-2@s">
-                          <input id="bif_porp_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="porp>=">
-                        </div>
-                        <div class="uk-width-1-2@s">
-                          <input id="bif_porp_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="porp<=">
-                        </div>
-                        <div class="uk-width-1-2@s">
-                          <input id="bif_ent_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="ent>=">
-                        </div>
-                        <div class="uk-width-1-2@s">
-                          <input id="bif_ent_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="ent<=">
-                        </div>
-                        <!--div>
-                          <input onclick="submit-bif()" type="submit" value="Submit">
-                        </div-->
-                          </form>
-                      </li>
-                      <li><a onclick="submit_bif()">提交筛选</a></li>
-                      <li><a onclick="save_selected()">提交指标</a></li>
-                      <li>
-                        <form class="uk-grid-small uk-margin uk-margin-small-left uk-margin-small-right" uk-grid>
+                        <form class="uk-grid-small uk-margin-small-left uk-margin-small-right" uk-grid style='width:175px'>
+                          <div class="uk-width-1-2@s">
+                            <input id="bif_mean_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="mean>=">
+                          </div>
+                          <div class="uk-width-1-2@s">
+                            <input id="bif_mean_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="mean<=">
+                          </div>
+                          <div class="uk-width-1-2@s">
+                            <input id="bif_porp_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="porp>=">
+                          </div>
+                          <div class="uk-width-1-2@s">
+                            <input id="bif_porp_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="porp<=">
+                          </div>
+                          <div class="uk-width-1-2@s">
+                            <input id="bif_ent_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="ent>=">
+                          </div>
+                          <div class="uk-width-1-2@s">
+                            <input id="bif_ent_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="ent<=">
+                          </div>
+                        </form>
+                        <a onclick="submit_bif()">提交筛选</a>
+                        <a onclick="save_selected()">提交指标</a>
+                        <form class="uk-grid-small uk-margin-left uk-margin-small-right" uk-grid style='margin-top:0cm'>
                           <input id="save_selected_symbol" class="uk-input uk-form-small" type="text" placeholder="提交指标描述">
                         </form>
-                      </li>
                     </ul>
-
                   </li>
-
-                  <!--li class="uk-nav-header">Header</li>
-                  <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: table"></span> Item</a></li>
-                  <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: thumbnails"></span> Item</a></li>
-                  <li class="uk-nav-divider"></li>
-                  <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: trash"></span> Item</a></li -->
+                  <li class="uk-active"><a onclick="load_b_html()">指标聚类</a></li>
+                  <li class="uk-active"><a onclick="load_b_html()">模型训练</a></li>
                 </ul>
               </div>
 
-              <!--div id="left-chart-nav">
-                <nav class="scrollactive-nav">
-                  <ul>
-                    <li>
-                      <a id="left-chart-nav-line" onclick="load_b_html()" class="left-chart-nav-link scrollactive-item">
-                        <span class="chart-name">折线图</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a id="left-chart-nav-bar" href="#chart-type-bar" class="left-chart-nav-link scrollactive-item">
-                        <span class="chart-name">柱状图</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a id="left-chart-nav-pie" href="#chart-type-pie" class="left-chart-nav-link scrollactive-item">
-                        <span class="chart-name">饼图</span>
-                      </a>
-                    </li>
-                  </ul>
-                </nav>
-              </div -->
             </div>
             <div id="explore-container">
               <div class="example-list-panel">
                 <div id='model_repository' hidden>
-                  <h3 id="chart-type-line" class="chart-type-head" onclick="load_model_repository()" type="button">模型容器-加载</h3>
+                  <h3 id="chart-type-line" class="chart-type-head" type="button">模型仓库</h3>
                   <div class="uk-child-width-1-4@m uk-grid-small uk-grid-match" uk-grid id="model_repository_container">
                   </div>
                   <h3 id="chart-type-line" class="chart-type-head"></h3>
@@ -568,10 +538,6 @@
     locale: 'zh'
 };
     </script>
-    <!-- script type="text/javascript">window.globalArgsExtra.version = '1624430965835';
-         window.globalArgsExtra.cdnRoot = EC_WWW_CDN_PAY_ROOT + '/examples';
-         echartsExample.init('#ec-example-main', window.globalArgsExtra);    </script-->
-    <!-- Baidu Tongji-->
     <script type="text/javascript">var _hmt = _hmt || [];
       (function() {
           var hm = document.createElement("script");
@@ -580,7 +546,6 @@
           s.parentNode.insertBefore(hm, s);
       })();
     </script>
-    <!-- Google Analytics-->
     <script type="text/javascript" async="" src="echarts.apache.org/www.googletagmanager.com/gtag/js?id=UA-141228404-1"></script>
     <script type="text/javascript">window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}

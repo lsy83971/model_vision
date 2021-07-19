@@ -27,7 +27,6 @@ sb.recorder.r_binning_excel()
 sb.update_woe()
 ss = sb.var_find()
 
-ss
 
 
 cols = sb.var().index.tolist()
@@ -40,7 +39,7 @@ res = sb.train(cols = cols, sample = train_cond)
 sb.recorder.add_record()
 sb.recorder.r_binning_html()
 sb.recorder.r_sub_cond()
-sb.recorder.r_xy()
+#sb.recorder.r_xy()
 sb.recorder.r_cmt()
 sb.recorder.r_binning_tools()
 sb.recorder.r_sub_binning_tools()

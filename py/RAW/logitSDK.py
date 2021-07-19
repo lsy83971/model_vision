@@ -13,10 +13,10 @@ import pyecharts.options as opts
 
 ## sys path 添加py所在目录
 try:
-    #__file__ = "/home/lsy/Project/web/py/RAW/logitSDK.py"
     _tmp_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))[: -1])
 except:
     _tmp_dir = os.path.dirname(os.getcwd())
+
 sys.path.append(_tmp_dir)
 _root_dir = os.path.dirname(_tmp_dir)
 from RAW.int import *
@@ -673,8 +673,8 @@ class sub_binning(OrderedDict):
         return t_df
 
 class recorder:
-    home = os.path.dirname(os.path.abspath(__file__)) + "/"
-    global_db = home + "model.db"
+    home = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    global_db = home + "/.model.db"
 
     def __init__(self, m, cwd = None):
         import os
@@ -793,7 +793,7 @@ class recorder:
         return [self.b_html_dir + i for i in os.listdir(self.b_html_dir)]
     def load_html_map(self):
         _l = self.load_html_files()
-        return {os.path.basename(i.split(".")[0]):i for i in _l}
+        return {os.path.basename(i.split(".")[ - 2]):i for i in _l}
 
     def load_png_path(self):
         return self.b_png_dir
