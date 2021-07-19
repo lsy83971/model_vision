@@ -1,10 +1,9 @@
 ## 数据库文件
-##/**.db
-## 模型保存数据
-## /**.model_profile
-## /.model_profile
-## ##
-## /logger
-## ##
-## /root
-## /**~
+/**.db
+/**.db
+/**.model_profile
+/.model_profile
+## 其他
+/logger
+/root
+/**~
