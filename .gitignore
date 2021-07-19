@@ -1,9 +1,8 @@
 ## 数据库文件
-/**.db
-/**.db
-/**.model_profile
-/.model_profile
+**.db
+**.model_profile
 ## 其他
 /logger
 /root
-/**~
+*~
+**~
