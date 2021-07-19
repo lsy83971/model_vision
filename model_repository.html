@@ -1,0 +1,13 @@
+{% for items in info %}
+<div class="uk-animation-toggle" tabindex="0" style="cursor:hand" onclick="select_model(this)">
+  <div style="display:none;" class='model_info' dir='{{items["dir"]}}' db='{{items["db"]}}' name='{{items["name"]}}' ></div>
+  <div class="uk-card uk-card-default uk-card-body uk-animation-slide-bottom-small">
+    <div>
+      <b style='word-wrap:break-word;'>{{items["data"][0]}}</b>
+      {% for it in items["data"][1:] %}
+      <div style='word-wrap:break-word;'>{{it}}</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endfor %}
