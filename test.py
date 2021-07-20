@@ -2,10 +2,11 @@ import numpy as np
 import pyecharts.options as opts
 from pyecharts.charts import Bar, Line, Grid
 import pandas as pd
+
+
 sample1 = pd.read_csv("./py/sample1.csv")
 y = pd.read_csv("./py/y.csv")["odhis30_third"]
 sample1["dt"] = pd.Series(pd.date_range("2020-01-01", "2021-01-01")).sample(sample1.shape[0], replace = True).values
-
 import sys
 sys.path.append("./py")
 
@@ -20,14 +21,11 @@ conds = cond_part(pd.to_datetime(sb.X["dt"]), 0.5)
 sb.draw_binning(conds = conds)
 
 
-
 sb.recorder.r_binning_png()
 sb.recorder.r_binning_excel()
 
 sb.update_woe()
 ss = sb.var_find()
-
-
 
 cols = sb.var().index.tolist()
 cols = [i for i in cols if i != "month"]

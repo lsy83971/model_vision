@@ -1050,7 +1050,7 @@ class recorder:
         worksheet = workbook.add_worksheet(sheet_name)
         for i in range(len(cols)):
             _i1, _i2 = int(i / 3), i % 3
-            worksheet.write(2 * _i1, 2 * _i2 + 1,"{0}".format(i))
+            worksheet.write(2 * _i1, 2 * _i2 + 1,"{0}".format(cols[i]))
             DRAW.draw.insert_image(worksheet,
                                    _d[cols[i]],
                                    row = 2 * _i1 + 1,
