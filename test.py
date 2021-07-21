@@ -1,3 +1,4 @@
+## sudo pip install numpy pandas lightgbm flask matplotlib seaborn scikit-learn xlsxwriter xlrd==1.2.0 openpyxl
 import numpy as np
 import pyecharts.options as opts
 from pyecharts.charts import Bar, Line, Grid

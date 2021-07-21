@@ -867,13 +867,23 @@ class recorder:
         bar.add_xaxis(xaxis_data=x_label)
         for l, s1 in self.m.sub_binning_tools.items():
             s = s1[name].  info
-            bar.add_yaxis(series_name = l,
-                          #category_gap = 0.2,
-                          #gap = 0.1,
-                          yaxis_data = (s["cnt"] / (s["cnt"].  sum())).tolist(),
-                          label_opts = opts.LabelOpts(is_show = False),
-                          itemstyle_opts = opts.ItemStyleOpts(opacity = 0.75)
-            )
+            try:
+                bar.add_yaxis(series_name = l,
+                              #category_gap = 0.2,
+                              #gap = 0.1,
+                              yaxis_data = (s["cnt"] / (s["cnt"].  sum())).tolist(),
+                              label_opts = opts.LabelOpts(is_show = False),
+                              itemstyle_opts = opts.ItemStyleOpts(opacity = 0.75)
+                )
+            except:
+                bar.add_yaxis(series_name = l,
+                              #category_gap = 0.2,
+                              #gap = 0.1,
+                              y_axis = (s["cnt"] / (s["cnt"].  sum())).tolist(),
+                              label_opts = opts.LabelOpts(is_show = False),
+                              itemstyle_opts = opts.ItemStyleOpts(opacity = 0.75)
+                )
+                
         ## 双y轴
         bar.extend_axis(
             yaxis=opts.AxisOpts(
