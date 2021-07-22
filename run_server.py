@@ -78,7 +78,7 @@ def cluster():
         bif_porp = ld.load_table("bifurcate").set_index("index")["bif_porp"].  to_dict()
         bif_ent = ld.load_table("bifurcate").set_index("index")["bif_ent"].  to_dict()
     except:
-        bif_maen = dict()
+        bif_mean = dict()
         bif_porp = dict()
         bif_ent = dict()
 
