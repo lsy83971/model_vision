@@ -1,4 +1,3 @@
-## sudo pip install numpy pandas lightgbm flask matplotlib seaborn scikit-learn xlsxwriter xlrd==1.2.0 openpyxl
 import numpy as np
 import pyecharts.options as opts
 from pyecharts.charts import Bar, Line, Grid
@@ -261,6 +260,8 @@ reload(xlrd)
 import requests
 import json
 r = requests.post("http://127.0.0.1:5005/cluster", json=_d)
+r = requests.post("http://127.0.0.1:5005/test1", json={"a": 1})
+
 print(r.text)
 
 

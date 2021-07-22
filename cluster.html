@@ -1,0 +1,18 @@
+{% for part,str_part,names in cluster_res %}
+<h3 id="chart-type-line" class="chart-type-head">
+  {{"PART"+str_part}}
+  <span>line</span>
+</h3>
+<div style="margin-left:0px" class="uk-child-width-1-3@s uk-child-width-1-2@s" uk-grid uk-lightbox="animation: slide">
+  {% for i in names %}
+  <!-- TODO bif_mean必须包含所有html_path指标 -->
+  <div class="cluster-index-selected cluster-index-info" style="width:auto;Margin:5px;padding-left:0px;" name={{i}} cmt={{cmt.get(i,"")}} bif_mean={{bif_mean.get(i,-1)}} bif_porp={{bif_porp.get(i,-1)}} bif_ent={{bif_ent.get(i,0)}} cluster_part='{{str_part}}'>
+    <div onclick="toggle_chart_selected(this)" style="cursor:hand">
+      <div align="center" class="uk-text-small">{{i}}</div>
+      <div align="center" class="uk-text-small">{{cmt.get(i,"")}}</div>
+    </div>
+    {% include html_path[i] %}
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
