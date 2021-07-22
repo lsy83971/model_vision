@@ -260,6 +260,8 @@ reload(xlrd)
 import requests
 import json
 r = requests.post("http://127.0.0.1:5005/cluster", json=_d)
+r = requests.post("http://127.0.0.1:5005/test1", json={"a": 1})
+
 print(r.text)
 
 

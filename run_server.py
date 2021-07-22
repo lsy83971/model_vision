@@ -30,7 +30,6 @@ from RAW.logitSDK import loader
 HOST = "0.0.0.0"
 PORT = 5005
 
-
 ## 建立symlink
 app = flask.Flask(__name__, template_folder='./',static_folder="",static_url_path="")
 _cwd = os.path.dirname(os.path.abspath(__file__))
@@ -40,7 +39,6 @@ if not os.path.exists(_dst):
     os.symlink(_src, _dst)
 def cpath(abspath):
     return "root" + abspath
-
 
 app.config['JSON_AS_ASCII'] = False
 models = {}
@@ -67,21 +65,49 @@ def save_selected():
     print("***************")
     return {"a": 1}
 
+@app.route("/cluster", methods=["POST"])
+def cluster():
+    _d = request.get_json()
+    ld = get_loader(_d)
+    cl = ld.load_cluster()
+    cmt = ld.load_table("comment").set_index("index")["comment"].  to_dict()
+    html_path = pd.Series(ld.load_html_map())
+    html_path = html_path.apply(cpath).to_dict()
+    try:
+        bif_mean = ld.load_table("bifurcate").set_index("index")["bif_mean"].  to_dict()
+        bif_porp = ld.load_table("bifurcate").set_index("index")["bif_porp"].  to_dict()
+        bif_ent = ld.load_table("bifurcate").set_index("index")["bif_ent"].  to_dict()
+    except:
+        bif_maen = dict()
+        bif_porp = dict()
+        bif_ent = dict()
+
+    _d1 = dict()
+    for i in ["cols", "ruleD", "ruleN"]:
+        if i in _d:
+            _d1[i] = _d[i]
+    res = cl.cluster(**_d1)
+    cluster_res = [(j, str(int(j)), i.to_dict()) for j, i in enumerate(res)]
+    #def render_template_string(source, **context):
+    return render_template('cluster.html',
+                           html_path = html_path,
+                           cmt = cmt,
+                           bif_mean = bif_mean,
+                           bif_porp = bif_porp,
+                           bif_ent = bif_ent,
+                           cluster_res=cluster_res,
+    )
+
 @app.route("/test", methods=["GET"])
 def test():
-    return render_template("test.html")
+    print(type(request.args))
+    input_data = request.args
+    return input_data
 
-@app.route("/test1", methods=["GET"])
+@app.route("/test1", methods=["POST"])
 def test1():
-    return render_template("test1.html", name = "/home/lsy/Project/web/test.html")
-
-@app.route("/test2", methods=["GET"])
-def test2():
-    return {"a": 1}
-
-@app.route("/test3", methods=["GET"])
-def test3():
-    return {"a": 1}
+    _d = request.get_json()
+    return _d
 
 @app.route("/b_html", methods=["POST"])
 def get_b_html():
@@ -123,7 +149,7 @@ def model_repository():
     return render_template('model_repository.html', info = model_info)
 
 @app.route("/mv", methods=["GET"])
-def pic():
+def mv():
     return render_template('index.html')
 
 

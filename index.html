@@ -94,6 +94,31 @@
           send_post(url='/b_html',params=params,ready_func=load_b_html_ready_func);
       }
 
+      // 1.读取rcharts html
+      function load_cluster_html_ready_func(xmlhttp){
+          document.getElementById("cluster_charts").innerHTML=xmlhttp.responseText;
+          obj = document.getElementById("cluster_charts");
+          obj1 = obj.getElementsByTagName("script");
+          alert("绘制折线图...");
+          for (var i=0;i<obj1.length;i++){
+              eval(obj1[i].innerHTML);
+          }
+          alert("完成折线图...");
+      }
+
+
+      function load_cluster_html_param(){
+          d = load_model_param()
+          d["cols"] = ["month"]
+          return d
+      }
+
+      function load_cluster_html(){
+          var params=load_cluster_html_param();
+          send_post(url='/cluster',params=params,ready_func=load_cluster_html_ready_func);
+      }
+
+
       // 2.保存指标
       function save_selected_ready_func(xmlhttp){
           alert("保存指标完成！")
@@ -503,7 +528,7 @@
                         </form>
                     </ul>
                   </li>
-                  <li class="uk-active"><a onclick="load_b_html()">指标聚类</a></li>
+                  <li class="uk-active"><a onclick="load_cluster_html()">指标聚类</a></li>
                   <li class="uk-active"><a onclick="load_b_html()">模型训练</a></li>
                 </ul>
               </div>
@@ -518,6 +543,8 @@
                   <h3 id="chart-type-line" class="chart-type-head"></h3>
                 </div>
                 <div id='b_charts' style="width: auto">
+                </div>
+                <div id='cluster_charts' style="width: auto">
                 </div>
               </div>
             </div>

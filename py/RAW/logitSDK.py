@@ -9,6 +9,7 @@ import sqlite3
 import xlsxwriter
 from shutil import copyfile
 from pyecharts.charts import Bar, Line, Grid
+from .cluster import col_cluster
 import pyecharts.options as opts
 
 ## sys path 添加py所在目录
@@ -99,6 +100,7 @@ def lazy_fit_func(self, x, y):
     else:
         _res["bad_cnt"] = (y == 1).sum()
     return _res
+
 
 class lgt:
     default_kwargs = {
@@ -430,6 +432,16 @@ class lgt:
         for i in cols:
             self.woevalue[i] = self.trans(i, "woe").astype(float)
         self.corr = self.woevalue.corr()
+
+    def cluster(self, cols, stop_dist=0.7, stop_nodecnt=2):
+        from cluster import Hierarchical
+        DISTANCE = (1 - (self.corr.loc[cols, cols])**2)
+        h = Hierarchical(data=DISTANCE)
+        names = [(i, ) for i in cols]
+        cluster_res = h.hcluster(col_list=names, stop_dist=0.95, stop_nodecnt=3)
+        cluster_res1 = [self.entL.loc[list(i)] for i in cluster_res]
+        cluster_res1.sort(key=lambda x:x.max(), reverse=True)
+        return cluster_res1
 
     def var(self, cols = None, exclud = [], includ = [], rule = 0.6):
         _bcnt = self.binning_cnt()
@@ -1149,6 +1161,15 @@ class recorder:
         except:
             pass
 
+    def r_ent(self):
+        self.save_df(self.m.entL, "ent.pkl")
+    def load_ent(self):
+        return self.load_df("ent.pkl")
+    def load_cluster(self):
+        corr = self.load_corr()
+        ent = self.load_ent()
+        return col_cluster.from_data(data=corr, entL=ent)
+
 class loader:
     home = recorder.home
     global_db = recorder.global_db
@@ -1187,6 +1208,8 @@ class loader:
     load_comment = recorder.load_comment
     save_cols = recorder.save_cols
     load_corr = recorder.load_corr
+    load_ent = recorder.load_ent
+    load_cluster = recorder.load_cluster
 
 class binning_excel:
     def __init__(self, path = None, log = None):
