@@ -9,8 +9,6 @@ sys.path.append("./py")
 import warnings
 warnings.filterwarnings("ignore")
 import lightgbm as lgb
-# asdf
-# asdf
 import pickle
 import pandas as pd
 import math
