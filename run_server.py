@@ -26,12 +26,16 @@ from flask import request
 import traceback
 import os
 from RAW.logitSDK import loader
-
+import uuid
 HOST = "0.0.0.0"
 PORT = 5005
 
 ## 建立symlink
 app = flask.Flask(__name__, template_folder='./',static_folder="",static_url_path="")
+def jinja_uuid():
+    return uuid.uuid4().hex
+app.jinja_env.globals.update(jinja_uuid=jinja_uuid)
+
 _cwd = os.path.dirname(os.path.abspath(__file__))
 _dst = _cwd + "/root"
 _src = "/"
@@ -100,9 +104,7 @@ def cluster():
 
 @app.route("/test", methods=["GET"])
 def test():
-    print(type(request.args))
-    input_data = request.args
-    return input_data
+    return render_template("test1.html", a=1)
 
 @app.route("/test1", methods=["POST"])
 def test1():

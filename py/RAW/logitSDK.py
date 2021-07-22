@@ -966,6 +966,7 @@ class recorder:
         #grid.add(bar, grid_opts = opts.GridOpts(pos_top = '50%'))
         #grid.add(line, grid_opts = opts.GridOpts(pos_top = '50%'))
         bar.overlap(line)
+        bar.chart_id = "{{id}}"
         bar.render(template_name = "simple_chart_body.html", path = path)
 
     def r_binning_html(self):

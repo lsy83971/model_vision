@@ -6,11 +6,13 @@
   {% for i in names %}
   <!-- TODO bif_mean必须包含所有html_path指标 -->
   <div class="charts-index-selected charts-index-info" style="width:auto;Margin:5px;padding-left:0px;" name={{i}} cmt={{cmt.get(i,"")}} bif_mean={{bif_mean.get(i,-1)}} bif_porp={{bif_porp.get(i,-1)}} bif_ent={{bif_ent.get(i,0)}}>
-    <div onclick="toggle_chart_selected(this)" style="cursor:hand">
+    <div onclick="toggle_chart_selected(this,'charts-index-selected')" style="cursor:hand">
       <div align="center" class="uk-text-small">{{i}}</div>
       <div align="center" class="uk-text-small">{{cmt.get(i,"")}}</div>
     </div>
+    {% with id= jinja_uuid()%}
     {% include html_path[i] %}
+    {% endwith %}
   </div>
   {% endfor %}
 </div>

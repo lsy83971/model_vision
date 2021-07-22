@@ -94,7 +94,7 @@
           send_post(url='/b_html',params=params,ready_func=load_b_html_ready_func);
       }
 
-      // 1.读取rcharts html
+      // 聚类
       function load_cluster_html_ready_func(xmlhttp){
           document.getElementById("cluster_charts").innerHTML=xmlhttp.responseText;
           obj = document.getElementById("cluster_charts");
@@ -108,9 +108,28 @@
 
 
       function load_cluster_html_param(){
-          d = load_model_param()
-          d["cols"] = ["month"]
-          return d
+	  obj1 = load_model_param()
+          obj1.ruleN=1;
+          obj1.ruleD=0.8;
+
+          $(".cluster_threshold").each(
+              function(){
+                  var val=$(this).val();
+                  var name=$(this).attr("id");
+                  if (val != ""){
+                      obj1[name]=val;
+                  }
+              }
+          );
+
+          var selected_list=new Array()
+          $(".charts-index-selected").each(
+              function(){
+                  selected_list.push($(this).attr("name"));
+              }
+          );
+	  obj1["cols"] = selected_list;
+	  return obj1;	  
       }
 
       function load_cluster_html(){
@@ -142,6 +161,11 @@
           var params=save_selected_param();
           send_post(url='/save_selected',params=params,ready_func=save_selected_ready_func);
       }
+
+
+
+
+      
 
     </script>
 
@@ -219,8 +243,11 @@
           alert("finish");
       };
 
-      function toggle_chart_selected(obj){
-          $(obj).parent().toggleClass("charts-index-selected");
+
+      
+
+      function toggle_chart_selected(obj, name){
+          $(obj).parent().toggleClass(name);
       };
 
 
@@ -240,6 +267,9 @@
     </script>
     <style type="text/css">/* Copyright 2014-present Evernote Corporation. All rights reserved. */
       .charts-index-selected {
+          background-color:#9cd9f5;
+      }
+      .cluster-index-selected {
           background-color:#9cd9f5;
       }
     </style>
@@ -499,7 +529,7 @@
                   <li class="uk-active"><a onclick="load_model_repository()">模型加载</a></li>
                   <li class="uk-active"><a onclick="load_b_html()">绘制分箱</a></li>
                   <li class="uk-parent">
-                    <a href="#">指标筛选</a>
+                    <a style='width:195px' href="#">指标筛选</a>
                     <ul>
                         <form class="uk-grid-small uk-margin-small-left uk-margin-small-right" uk-grid style='width:175px'>
                           <div class="uk-width-1-2@s">
@@ -528,6 +558,24 @@
                         </form>
                     </ul>
                   </li>
+		  <li class="uk-parent">
+                    <a style='width:195px' href="#">指标聚类</a>
+                    <ul>
+                        <form class="uk-grid-small uk-margin-small-left uk-margin-small-right" uk-grid style='width:175px'>
+                          <div>
+                            <input id="ruleN" class="cluster_threshold uk-input uk-form-small" type="text" placeholder="cat">
+                          </div>
+                          <div>
+                            <input id="ruleD" class="cluster_threshold uk-input uk-form-small" type="text" placeholder="dist">
+                          </div>
+                        </form>
+                        <a onclick="load_cluster_html()">执行聚类</a>
+                        <a onclick="save_cluster()">提交聚类</a>
+                        <form class="uk-grid-small uk-margin-left uk-margin-small-right" uk-grid style='margin-top:0cm'>
+                          <input id="save_cluster_symbol" class="uk-input uk-form-small" type="text" placeholder="提交指标描述">
+                        </form>
+                    </ul>
+                  </li>		  
                   <li class="uk-active"><a onclick="load_cluster_html()">指标聚类</a></li>
                   <li class="uk-active"><a onclick="load_b_html()">模型训练</a></li>
                 </ul>

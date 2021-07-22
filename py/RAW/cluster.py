@@ -19,6 +19,8 @@ class Hierarchical():
         return node.center
 
     def hcluster(self, col_list, ruleD=0.8, ruleN=2):
+        ruleD = float(ruleD)
+        ruleN = int(float(ruleN))
         nodes=[ClusterNode(center=v) for i,v in enumerate(col_list)]
         distances = {}
         currentclustid = -1

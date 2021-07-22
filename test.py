@@ -49,13 +49,20 @@ sb.recorder.r_model_sample()
 sb.recorder.r_model_report()
 sb.recorder.r_ent()
 
+sb.recorder.load_html_map()
+
+from flask import render_template
+#render_template("/home/lishiyu/Project/model_vision/.model_profile/Lgt2021_0722_1435_1626935739/b_html/card_cm_bank12m_pct.html", id="asd")
+
 cl = sb.recorder.load_cluster()
 cl.cluster(["month", "card_cm_bank12m_pct"])
 cl.cluster(["month", "card_cm_bank60m_pct", "card_cm_bank12m_pct"], ruleD=0.9)[0]
 cl.cluster(["month", "card_cm_bank60m_pct", "card_cm_bank12m_pct"], ruleD=0.9)[1]
 
+sb.recorder.name
+import flask
 
-
+    
 ss = sb.recorder.load_cluster()
 ent = sb.recorder.load_ent()
 corr = sb.recorder.load_corr()
@@ -274,3 +281,11 @@ _d["db"] = sb.recorder.db
 _d["name"] = sb.recorder.name
 data = _d
 _d["cols"] = ["month"]
+
+
+import uuid
+
+UUID('bd65600d-8669-4903-8a14-af88203add38')
+>>> str(uuid.uuid4())
+'f50ec0b7-f960-400d-91f0-c42a6d44e3d0'
+>>> uuid.uuid4().hex
