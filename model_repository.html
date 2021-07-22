@@ -1,3 +1,5 @@
+<h3 id="chart-type-line" class="chart-type-head" type="button">模型仓库</h3>
+<div class="uk-child-width-1-4@m uk-grid-small uk-grid-match" uk-grid id="model_repository_container">
 {% for items in info %}
 <div class="uk-animation-toggle" tabindex="0" style="cursor:hand" onclick="select_model(this)">
   <div style="display:none;" class='model_info' dir='{{items["dir"]}}' db='{{items["db"]}}' name='{{items["name"]}}' ></div>
@@ -11,3 +13,4 @@
   </div>
 </div>
 {% endfor %}
+</div>

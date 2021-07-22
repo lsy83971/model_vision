@@ -101,6 +101,31 @@ def lazy_fit_func(self, x, y):
         _res["bad_cnt"] = (y == 1).sum()
     return _res
 
+def step_train(x, y, ent, C, rule=0, mode="l1", step_wise=True):
+    _cols = pd.Series(x.columns).copy()
+    while True:
+        x = x[_cols]
+        lrcv_L1 = LogisticRegression(C = C,
+                                     penalty = mode,
+                                     solver='liblinear',
+                                     max_iter=100,
+                                     class_weight = {0: 0.1, 1: 0.9})
+        lrcv_L1.fit(x, y)
+        lg_coef = pd.Series(lrcv_L1.coef_[0],index = _cols).sort_values()
+        lg_coef = pd.DataFrame(lg_coef, columns=["Logistic"])
+        lg_coef["Logistic"] = ent.loc[lg_coef.index] * lg_coef["Logistic"]
+        exclud2 = lg_coef[lg_coef["Logistic"] <= rule]
+
+        if len(exclud2) > 0:
+            if step_wise:
+                exclud_index = exclud2[exclud2 == exclud2.min()]. index.tolist()
+            else:
+                exclud_index = exclud2. index.tolist()
+            _cols = pd.Series(_cols)[~pd.Series(_cols).isin(exclud_index)]
+            continue
+        else:
+            return {"cols": _cols.tolist(), "model": lrcv_L1}
+
 
 class lgt:
     default_kwargs = {
@@ -482,57 +507,43 @@ class lgt:
               mode = "l1",
               quant = 10,
     ):
-        _x = self.woevalue.loc[sample[0]]
-        _y = self.Y.loc[sample[0]]
-        _cols = pd.Series(cols.copy())
-        _cols = _cols[_cols.isin(self.X.columns)]
-
         if labels is None:
             labels = ["set" + str(int(i + 1)) for i in range(len(sample))]
         self.train_cond = {labels[i]: sample[i] for i in range(len(sample))}
+        
+        _x = self.woevalue.loc[sample[0], cols]
+        _y = self.Y.loc[sample[0]]
+        _ent = self.entL
+        _res = step_train(_x, _y, C=C, rule=rule, ent=_ent, mode=mode, step_wise=step_wise)
 
-        while True:
-            _x = _x[_cols]
-            lrcv_L1 = LogisticRegression(C = C,
-                                         penalty = mode,
-                                         solver='liblinear',
-                                         max_iter=100,
-                                         class_weight = {0: 0.1, 1: 0.9})
-            lrcv_L1.fit(_x, _y)
-            lg_coef = pd.Series(lrcv_L1.coef_[0],index = _cols).sort_values()
-            lg_coef = pd.DataFrame(lg_coef, columns=["Logistic"])
-            lg_coef["Logistic"] = self.entL.loc[lg_coef.index] * lg_coef["Logistic"]
-            exclud2 = lg_coef[lg_coef["Logistic"] <= rule]
-
-            if len(exclud2) > 0:
-                if step_wise:
-                    exclud_index = exclud2[exclud2 == exclud2.min()]. index.tolist()
-                else:
-                    exclud_index = exclud2. index.tolist()
-                _cols = pd.Series(_cols)[~pd.Series(_cols).isin(exclud_index)]
-                continue
-            else:
-                cols = _cols.tolist()
-                self.model = lrcv_L1
-                self.model_cols = cols
-                _x1 = self.woevalue.loc[:, cols]
-                _score = pd.Series(lrcv_L1.predict_proba(_x1)[:, 1], index = _x1.index)
-                _t = binning.\
-                    tick(x = _score, quant = quant,
-                         single_tick = False,
-                         ruleV = _score.shape[0] / quant / 2,
-                         mode = "v"). ticks_boundaries()
-                self.score_ticks = _t
-                self.model_result = model_result().from_model(self)
-                res = self.model_result.binning_cond(pd.Series(True, index = self.Y.index))
-                self.model_result_param = res
-                return res
+        model = _res["model"]
+        cols = _res["cols"]
+        _x1 = self.woevalue.loc[:, cols]
+        _score = pd.Series(model.predict_proba(_x1)[:, 1], index = _x1.index)
+        _t = binning.\
+            tick(x = _score, quant = quant,
+                 single_tick = False,
+                 ruleV = _score.shape[0] / quant / 2,
+                 mode = "v"). ticks_boundaries()
+        self.model = model
+        self.model_cols = cols
+        self.score_ticks = _t
+        self.model_result = model_result().from_model(self)
+        res = {labels[i]:self.model_result.binning_cond(sample[i]) for i in range(len(sample))}
+        self.model_result_param = res
+        return res        
 
     def predict(self, X):
+        """
+        woe变换+LR模型
+        """
         X1 = self.trans_woe(cols = self.model_cols, X = X)[self.model_cols]
         return self.predict1(X1)
 
     def predict1(self, X1):
+        """
+        纯LR模型
+        """
         X1 = X1[self.model_cols]
         return pd.Series(self.model.predict_proba(X1)[:, 1], index = self.X.index, name = "score")
 
@@ -576,12 +587,31 @@ class model_result:
         res["ticks"] = m.score_ticks
         res["standard_woe"] = m.standard_woe
         res["trans"] = _d.write_pattern()
-
-
         self.result = res
         return self.load_func()
 
+    def from_result(self,
+                    model,
+                    cols,
+                    ticks,
+                    standard_woe,
+                    binning_tools,
+                    lgt=None
+    ):
+        res = dict()
+        res['model'] = model
+        res['cols'] = cols
+        res['ticks'] = ticks
+        res['standard_woe'] = standard_woe
+        res['trans'] = binning_tools.sub(cols).write_pattern()
+        self.result = result
+        self.m = lgt
+        return self.load_func()
+
     def load_func(self):
+        """
+        加载woe转换函数
+        """
         res = self.result
         self.tools = intLDict.read_pattern(res["trans"])
         self.func = lambda x:self.tools.\
@@ -983,6 +1013,31 @@ class recorder:
     def r_xy(self):
         self.save_table(pd.concat([self.m.X, self.m.Y], axis = 1), "xy")
 
+    def r_woe(self):
+        self.save_table(pd.concat([self.m.X["dt"], self.m.woevalue, self.m.Y], axis = 1), "woe")
+        
+    def load_x(self, cols=None):
+        if cols is None:
+            cols1 = '*'
+        else:
+            cols1 = ",". join([i for i in cols])
+        return pd.read_sql("select {1} from {0}".  format(self.add_name("xy"), cols1), self.conn)
+
+    def load_y(self):
+        return pd.read_sql("select label from {0}".  format(self.add_name("xy"), cols1), self.conn)
+
+    def load_woe_x(self, cols=None):
+        if cols is None:
+            cols1 = '*'
+        else:
+            cols1 = ",". join([i for i in cols])
+        return pd.read_sql("select {1} from {0}".  format(self.add_name("woe"), cols1), self.conn)
+
+    def load_woe_y(self):
+        return pd.read_sql("select label from {0}".  format(self.add_name("woe"), cols1), self.conn)
+
+    
+    
     def r_dtypes(self):
         _df = self.m.types_form
         self.save_table(_df, "dtypes")
@@ -997,6 +1052,13 @@ class recorder:
         _df["dt"] = str(datetime.now())
         _df["symbol"] = symbol
         self.save_table(_df, "cols", append = True)
+        
+    def save_cluster(self, cols, symbol = "test"):
+        _df = pd.DataFrame([json.dumps(cols)])
+        _df.columns = ["cols"]
+        _df["dt"] = str(datetime.now())
+        _df["symbol"] = symbol
+        self.save_table(_df, "cluster", append = True)
 
     def r_corr(self):
         _df = self.m.corr
@@ -1205,6 +1267,9 @@ class loader:
     has_table = recorder.has_table
     load_table = recorder.load_table
     save_table = recorder.save_table
+    save_cols = recorder.save_cols
+    save_cluster = recorder.save_cluster
+    
     load_sub_binning_tools = recorder.load_sub_binning_tools
     load_sub_cond = recorder.load_sub_cond
     load_recorder = recorder.load_recorder
@@ -1217,10 +1282,13 @@ class loader:
     load_bifurcate = recorder.load_bifurcate
     load_cols = recorder.load_cols
     load_comment = recorder.load_comment
-    save_cols = recorder.save_cols
     load_corr = recorder.load_corr
     load_ent = recorder.load_ent
     load_cluster = recorder.load_cluster
+    load_x = recorder.load_x
+    load_y = recorder.load_y
+    load_woe_x = recorder.load_woe_x
+    load_woe_y = recorder.load_woe_y
 
 class binning_excel:
     def __init__(self, path = None, log = None):

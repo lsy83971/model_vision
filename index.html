@@ -1,630 +1,727 @@
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable="no">
-    <meta name="description" content="ECharts, a powerful, interactive charting and visualization library for browser">
-    <script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
-    <meta id='model_selector'>
-    <link rel="stylesheet" type="text/css" href="echarts.apache.org/cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
-    <link rel="shortcut icon" href="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/zh/images/favicon.png?_v_=20200710_1">
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries--><!--[if lt IE 9]><script src="echarts.apache.org/oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><script src="echarts.apache.org/oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
-    <link rel="stylesheet" type="text/css" href="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/zh/css/main.css?_v_=5bc19a133c"></link>
-    <script type="text/javascript" async="" src="echarts.apache.org/www.google-analytics.com/analytics.js"></script>
-    <script src="echarts.apache.org/hm.baidu.com/hm.js?54b918eee37cb8a7045f0fd0f0b24395"></script>
+    <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1" user-scalable="no">
+	<meta name="description" content="ECharts, a powerful, interactive charting and visualization library for browser">
+	<script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+	<meta id='model_selector'>
+	<link rel="stylesheet" type="text/css" href="echarts.apache.org/cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+	<link rel="shortcut icon" href="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/zh/images/favicon.png?_v_=20200710_1">
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries--><!--[if lt IE 9]><script src="echarts.apache.org/oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><script src="echarts.apache.org/oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+	<link rel="stylesheet" type="text/css" href="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/zh/css/main.css?_v_=5bc19a133c"></link>
+	<script type="text/javascript" async="" src="echarts.apache.org/www.google-analytics.com/analytics.js"></script>
+	<script src="echarts.apache.org/hm.baidu.com/hm.js?54b918eee37cb8a7045f0fd0f0b24395"></script>
 
-    <script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
-    <script>window.EC_WWW_LANG = 'zh';</script>
-    <script>
-      // 交互操作
+	<script type="text/javascript" src="https://assets.pyecharts.org/assets/echarts.min.js"></script>
+	<script>window.EC_WWW_LANG = 'zh';</script>
+	<script>
+	 // 交互操作
 
-      // 读取所有模型信息
-      function load_model_repository()
-      {
-	      var xmlhttp;
-	      if (window.XMLHttpRequest)
-	      {
-		      //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
-		      xmlhttp=new XMLHttpRequest();
-	      }
-	      else
-	      {
-		      // IE6, IE5 浏览器执行代码
-		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	      }
-	      xmlhttp.onreadystatechange=function()
-	      {
-		      if (xmlhttp.readyState==4 && xmlhttp.status==200)
-		      {
-			      document.getElementById("model_repository_container").innerHTML=xmlhttp.responseText;
-		      }
-	      }
-	      xmlhttp.open("GET","/model_repository",true);
-	      xmlhttp.send();
-      }
+	 // 读取所有模型信息
+	 function load_model_repository()
+	 {
+	     var xmlhttp;
+	     if (window.XMLHttpRequest)
+	     {
+		 //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+		 xmlhttp=new XMLHttpRequest();
+	     }
+	     else
+	     {
+		 // IE6, IE5 浏览器执行代码
+		 xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	     }
+	     xmlhttp.onreadystatechange=function()
+	     {
+		 if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		 {
+		     document.getElementById("model_repository").innerHTML=xmlhttp.responseText;
+		 }
+		 lsy_show_part('#model_repository');
+	     }
+	     alert("加载模型仓库...")
+	     xmlhttp.open("GET","/model_repository",true);
+	     xmlhttp.send();
+	 }
+	 
+	 // 0.post json方法
+	 function send_post(url,params,ready_func){
+	     var xmlhttp;
+	     if (window.XMLHttpRequest)
+	     {
+		 //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+		 xmlhttp=new XMLHttpRequest();
+	     }
+	     else
 
+	     {
+		 // IE6, IE5 浏览器执行代码
+		 xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	     }
+	     xmlhttp.onreadystatechange=function()
+	     {
+		 if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		 {
+                     ready_func(xmlhttp);
+		 }
+	     }
+             xmlhttp.open('POST', url);
+             xmlhttp.setRequestHeader('content-type', 'application/json');  //先open再设置请求头
+	     xmlhttp.send(JSON.stringify(params));
+	 }
 
+	 // 1.读取rcharts html
+	 function load_b_html_ready_func(xmlhttp){
+             document.getElementById("b_charts").innerHTML=xmlhttp.responseText;
+             obj = document.getElementById("b_charts");
+             obj1 = obj.getElementsByTagName("script");
+             alert("绘制折线图...");
+             for (var i=0;i<obj1.length;i++){
+		 eval(obj1[i].innerHTML);
+             }
+	     lsy_show_part('#b_charts');	  
+             alert("完成折线图...");
+	 }
 
-      // 0.post json方法
-      function send_post(url,params,ready_func){
-	      var xmlhttp;
-	      if (window.XMLHttpRequest)
-	      {
-		      //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
-		      xmlhttp=new XMLHttpRequest();
-	      }
-	      else
+	 function load_b_html_param(){
+             return load_model_param()
+	 }
 
-	      {
-		      // IE6, IE5 浏览器执行代码
-		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	      }
-	      xmlhttp.onreadystatechange=function()
-	      {
-		      if (xmlhttp.readyState==4 && xmlhttp.status==200)
-		      {
-                  ready_func(xmlhttp);
-		      }
-	      }
-          xmlhttp.open('POST', url);
-          xmlhttp.setRequestHeader('content-type', 'application/json');  //先open再设置请求头
-	      xmlhttp.send(JSON.stringify(params));
-      }
+	 function load_b_html(){
+             var params=load_b_html_param();
+             send_post(url='/b_html',params=params,ready_func=load_b_html_ready_func);
+	 }
 
-      // 1.读取rcharts html
-      function load_b_html_ready_func(xmlhttp){
-          document.getElementById("b_charts").innerHTML=xmlhttp.responseText;
-          obj = document.getElementById("b_charts");
-          obj1 = obj.getElementsByTagName("script");
-          alert("绘制折线图...");
-          for (var i=0;i<obj1.length;i++){
-              eval(obj1[i].innerHTML);
-          }
-          alert("完成折线图...");
-      }
-
-
-
-      function load_b_html_param(){
-          return load_model_param()
-      }
-
-      function load_b_html(){
-          var params=load_b_html_param();
-          send_post(url='/b_html',params=params,ready_func=load_b_html_ready_func);
-      }
-
-      // 聚类
-      function load_cluster_html_ready_func(xmlhttp){
-          document.getElementById("cluster_charts").innerHTML=xmlhttp.responseText;
-          obj = document.getElementById("cluster_charts");
-          obj1 = obj.getElementsByTagName("script");
-          alert("绘制折线图...");
-          for (var i=0;i<obj1.length;i++){
-              eval(obj1[i].innerHTML);
-          }
-          alert("完成折线图...");
-      }
-
-
-      function load_cluster_html_param(){
-	  obj1 = load_model_param()
-          obj1.ruleN=1;
-          obj1.ruleD=0.8;
-
-          $(".cluster_threshold").each(
-              function(){
-                  var val=$(this).val();
-                  var name=$(this).attr("id");
-                  if (val != ""){
-                      obj1[name]=val;
-                  }
-              }
-          );
-
-          var selected_list=new Array()
-          $(".charts-index-selected").each(
-              function(){
-                  selected_list.push($(this).attr("name"));
-              }
-          );
-	  obj1["cols"] = selected_list;
-	  return obj1;	  
-      }
-
-      function load_cluster_html(){
-          var params=load_cluster_html_param();
-          send_post(url='/cluster',params=params,ready_func=load_cluster_html_ready_func);
-      }
+	 // 2.聚类
+	 function load_cluster_html_ready_func(xmlhttp){
+             document.getElementById("cluster_charts").innerHTML=xmlhttp.responseText;
+             obj = document.getElementById("cluster_charts");
+             obj1 = obj.getElementsByTagName("script");
+             alert("开始聚类...");
+             for (var i=0;i<obj1.length;i++){
+		 eval(obj1[i].innerHTML);
+             }
+	     lsy_show_part('#cluster_charts');
+             alert("完成聚类...");
+	 }
 
 
-      // 2.保存指标
-      function save_selected_ready_func(xmlhttp){
-          alert("保存指标完成！")
-      }
+	 function load_cluster_html_param(){
+	     obj1 = load_model_param()
+             obj1.ruleN=1;
+             obj1.ruleD=0.8;
 
-      function save_selected_param(){
-          var model_param=load_model_param();
-          var selected_list=new Array()
-          $(".charts-index-selected").each(
-              function(){
-                  selected_list.push($(this).attr("name"));
-              }
-          );
-          model_param["selected_index"] = selected_list;
-          var symbol=document.getElementById("save_selected_symbol").value;
-          model_param["symbol"]=symbol;
-          return model_param;
-      }
+             $(".cluster_threshold").each(
+		 function(){
+                     var val=$(this).val();
+                     var name=$(this).attr("id");
+                     if (val != ""){
+			 obj1[name]=val;
+                     }
+		 }
+             );
 
-      function save_selected(){
-          var params=save_selected_param();
-          send_post(url='/save_selected',params=params,ready_func=save_selected_ready_func);
-      }
+             var selected_list=new Array()
+             $(".charts-index-selected").each(
+		 function(){
+                     selected_list.push($(this).attr("name"));
+		 }
+             );
+	     obj1["cols"] = selected_list;
+	     return obj1;	  
+	 }
 
-
-
-
-      
-
-    </script>
-
-    <script>
-      // 静态操作
-
-      // 获取当前所选模型信息
-      function load_model_param(){
-          // name:模型名称  db:数据库
-          obj2=document.getElementById("model_selector");
-          var dir=obj2.getAttribute("dir");
-          var db=obj2.getAttribute("db");
-          var name=obj2.getAttribute("name");
-	      var params={"db":db,"name":name,"dir":dir};
-          return params;
-      }
+	 function load_cluster_html(){
+             var params=load_cluster_html_param();
+             send_post(url='/cluster',params=params,ready_func=load_cluster_html_ready_func);
+	 }
 
 
-      // 记录所选模型信息
-      function select_model(obj)
-      {
-          obj1=obj.children[0];
-          var dir=obj1.getAttribute("dir");
-          var db=obj1.getAttribute("db");
-          var name=obj1.getAttribute("name");
-
-          obj2=document.getElementById("model_selector");
-          obj2.setAttribute("dir",dir);
-          obj2.setAttribute("db",db);
-          obj2.setAttribute("name",name);
-
-          alert("已选定模型: "+name);
-      }
-
-      function submit_bif(){
-          var obj1={};
-          obj1.bif_mean_min=-1;
-          obj1.bif_porp_min=-1;
-          obj1.bif_ent_min=-1;
-          obj1.bif_mean_max=100;
-          obj1.bif_porp_max=100;
-          obj1.bif_ent_max=100;
-
-          $(".bif_threshold").each(
-              function(){
-                  var val=$(this).val();
-                  var name=$(this).attr("id");
-                  if (val != ""){
-                      obj1[name]=val;
-                  }
-              }
-          );
-          $(".charts-index-selected").each(
-              function(){
-                  if (obj1.bif_mean_min > Number($(this).attr("bif_mean"))){
-                      $(this).removeClass("charts-index-selected");
-                  }
-                  if (obj1.bif_porp_min > Number($(this).attr("bif_porp"))){
-                      $(this).removeClass("charts-index-selected");
-                  }
-                  if (obj1.bif_ent_min > Number($(this).attr("bif_ent"))){
-                      $(this).removeClass("charts-index-selected");
-                  }
-                  if (obj1.bif_mean_max < Number($(this).attr("bif_mean"))){
-                      $(this).removeClass("charts-index-selected");
-                  }
-                  if (obj1.bif_porp_max < Number($(this).attr("bif_porp"))){
-                      $(this).removeClass("charts-index-selected");
-                  }
-                  if (obj1.bif_ent_max < Number($(this).attr("bif_ent"))){
-                      $(this).removeClass("charts-index-selected");
-                  }
-              }
-          );
-          alert("finish");
-      };
+	 // 2.聚类
+	 function load_cluster_html_ready_func(xmlhttp){
+             document.getElementById("cluster_charts").innerHTML=xmlhttp.responseText;
+             obj = document.getElementById("cluster_charts");
+             obj1 = obj.getElementsByTagName("script");
+             alert("开始聚类...");
+             for (var i=0;i<obj1.length;i++){
+		 eval(obj1[i].innerHTML);
+             }
+	     lsy_show_part('#cluster_charts');
+             alert("完成聚类...");
+	 }
 
 
-      
+	 function load_cluster_html_param(){
+	     obj1 = load_model_param()
+             obj1.ruleN=1;
+             obj1.ruleD=0.8;
 
-      function toggle_chart_selected(obj, name){
-          $(obj).parent().toggleClass(name);
-      };
+             $(".cluster_threshold").each(
+		 function(){
+                     var val=$(this).val();
+                     var name=$(this).attr("id");
+                     if (val != ""){
+			 obj1[name]=val;
+                     }
+		 }
+             );
+
+             var selected_list=new Array()
+             $(".charts-index-selected").each(
+		 function(){
+                     selected_list.push($(this).attr("name"));
+		 }
+             );
+	     obj1["cols"] = selected_list;
+	     return obj1;	  
+	 }
+
+	 function load_cluster_html(){
+             var params=load_cluster_html_param();
+             send_post(url='/cluster',params=params,ready_func=load_cluster_html_ready_func);
+	 }
+
+	 // 3.训练
+	 
+	 function train_ready_func(xmlhttp){
+             alert("保存指标完成！")
+	 }
+
+	 function train_param(){
+             alert("开始训练！")	     
+             var model_param=load_model_param();
+             var train_list=new Array()
+             $("div.cluster-index-selected").each(
+		 function(){
+                     train_list.push($(this).attr("name"));
+		 }
+             );
+             model_param["train_cols"] = train_list;
+	     
+             //var symbol=document.getElementById("train_symbol").value;
+             //model_param["symbol"]=document.getElementById("save_train_symbol").value;
+	     model_param["train_split_quant"]=document.getElementById("train_split_quant").value;
+             model_param["C"]=document.getElementById("train_c").value;
+             alert("开始训练1！")	     	     
+             return model_param;
+	 }
+
+	 function train(){
+             var params=train_param();
+             send_post(url='/train',params=params,ready_func=train_ready_func);
+	 }
+	 // 3.保存聚类指标
+	 function save_cluster_ready_func(xmlhttp){
+             alert("保存聚类指标完成！")
+	 }
+
+	 function save_cluster_param(){
+             var model_param=load_model_param();
+             var cluster_list={};
+             $("h3.cluster-split").each(
+		 function(){
+		     var name=$(this).attr("cluster-index");
+		     cluster_list[name]=new Array();
+		 }
+             );
+             $("div.cluster-index-selected").each(
+		 function(){
+		     var name=$(this).attr("cluster-index");
+                     cluster_list[name].push($(this).attr("name"));
+		 }
+             );
+             model_param["cluster_index"] = cluster_list;
+             var symbol=document.getElementById("save_cluster_symbol").value;
+             model_param["symbol"]=symbol;
+             return model_param;
+	 }
+
+	 function save_cluster(){
+             var params=save_cluster_param();
+             send_post(url='/save_cluster',params=params,ready_func=save_cluster_ready_func);
+	 }
+	</script>
+	<script>
+	 // 静态操作
+	 // 获取当前所选模型信息
+	 function load_model_param(){
+             // name:模型名称  db:数据库
+             obj2=document.getElementById("model_selector");
+             var dir=obj2.getAttribute("dir");
+             var db=obj2.getAttribute("db");
+             var name=obj2.getAttribute("name");
+	     var params={"db":db,"name":name,"dir":dir};
+             return params;
+	 }
 
 
-    </script>
-    <script>
-    function lsy_toggle_part(ele){
-        $(ele).each(function(){
-            if ($(this)[0].hasAttribute("hidden")){
-                $(this).removeAttr("hidden");
-            }else{
-                $(this).attr("hidden","");
-            }
-        })
-        $(ele)[0].scrollIntoView(true);
-        return false;
-    }
-    </script>
-    <style type="text/css">/* Copyright 2014-present Evernote Corporation. All rights reserved. */
-      .charts-index-selected {
-          background-color:#9cd9f5;
-      }
-      .cluster-index-selected {
-          background-color:#9cd9f5;
-      }
-    </style>
-    <link rel="stylesheet" href="uikit3/css/uikit.min.css"/>
+	 // 记录所选模型信息
+	 function select_model(obj)
+	 {
+             obj1=obj.children[0];
+             var dir=obj1.getAttribute("dir");
+             var db=obj1.getAttribute("db");
+             var name=obj1.getAttribute("name");
+
+             obj2=document.getElementById("model_selector");
+             obj2.setAttribute("dir",dir);
+             obj2.setAttribute("db",db);
+             obj2.setAttribute("name",name);
+
+             alert("已选定模型: "+name);
+	 }
+
+	 function submit_bif(){
+             var obj1={};
+             obj1.bif_mean_min=-1;
+             obj1.bif_porp_min=-1;
+             obj1.bif_ent_min=-1;
+             obj1.bif_mean_max=100;
+             obj1.bif_porp_max=100;
+             obj1.bif_ent_max=100;
+
+             $(".bif_threshold").each(
+		 function(){
+                     var val=$(this).val();
+                     var name=$(this).attr("id");
+                     if (val != ""){
+			 obj1[name]=val;
+                     }
+		 }
+             );
+             $(".charts-index-selected").each(
+		 function(){
+                     if (obj1.bif_mean_min > Number($(this).attr("bif_mean"))){
+			 $(this).removeClass("charts-index-selected");
+                     }
+                     if (obj1.bif_porp_min > Number($(this).attr("bif_porp"))){
+			 $(this).removeClass("charts-index-selected");
+                     }
+                     if (obj1.bif_ent_min > Number($(this).attr("bif_ent"))){
+			 $(this).removeClass("charts-index-selected");
+                     }
+                     if (obj1.bif_mean_max < Number($(this).attr("bif_mean"))){
+			 $(this).removeClass("charts-index-selected");
+                     }
+                     if (obj1.bif_porp_max < Number($(this).attr("bif_porp"))){
+			 $(this).removeClass("charts-index-selected");
+                     }
+                     if (obj1.bif_ent_max < Number($(this).attr("bif_ent"))){
+			 $(this).removeClass("charts-index-selected");
+                     }
+		 }
+             );
+             alert("finish");
+	 };
+
+
+	 
+
+	 function toggle_chart_selected(obj, name){
+             $(obj).parent().toggleClass(name);
+	 };
+
+
+	</script>
+	<script>
+	 function lsy_toggle_part(ele){
+             $(ele).each(function(){
+		 if ($(this)[0].hasAttribute("hidden")){
+                     $(this).removeAttr("hidden");
+		 }else{
+                     $(this).attr("hidden","");
+		 }
+             })
+             $(ele)[0].scrollIntoView(true);
+             return false;
+	 }
+
+	 function lsy_show_part(ele){
+             $(ele).each(function(){
+		 if ($(this)[0].hasAttribute("hidden")){
+                     $(this).removeAttr("hidden");
+		 }
+             })
+             $(ele)[0].scrollIntoView(true);
+             return false;
+	 }
+	 
+	</script>
+	<style type="text/css">/* Copyright 2014-present Evernote Corporation. All rights reserved. */
+	 .charts-index-selected {
+             background-color:#9cd9f5;
+	 }
+	 .cluster-index-selected {
+             background-color:#9cd9f5;
+	 }
+	</style>
+	<link rel="stylesheet" href="uikit3/css/uikit.min.css"/>
 	<script src="uikit3/js/uikit.min.js"></script>
 	<script src="uikit3/js/uikit-icons.min.js"></script>
 
-    <script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/npm/pace-progressbar@1.0.2/pace.min.js"></script><script id="font-hack" type="text/javascript">if (/windows/i.test(navigator.userAgent)) {
-    var el = document.createElement('style');
-    el.innerHTML = ''
-        + '@font-face {font-family:"noto-thin";src:local("Microsoft Yahei");}'
-        + '@font-face {font-family:"noto-light";src:local("Microsoft Yahei");}';
-    document.head.insertBefore(el, document.getElementById('font-hack'));
-}
-    </script>
-    <title>Examples - Apache ECharts</title>
-    <style>html, body {
-    /* position: sticky should not have overflow parents.*/
-    overflow-x: hidden;}
-    </style>
-    <link rel="stylesheet" href="echarts.apache.org/cdn.jsdelivr.net/npm/element-ui@2.13.2/lib/theme-chalk/index.css">
-    <link rel="stylesheet" href="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/css/example-bundle.css?_v_=4e03a5649f">
-    <style type="text/css">/* Copyright 2014-present Evernote Corporation. All rights reserved. */
+	<script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/npm/pace-progressbar@1.0.2/pace.min.js"></script><script id="font-hack" type="text/javascript">if (/windows/i.test(navigator.userAgent)) {
+																      var el = document.createElement('style');
+																      el.innerHTML = ''
+																		   + '@font-face {font-family:"noto-thin";src:local("Microsoft Yahei");}'
+																		   + '@font-face {font-family:"noto-light";src:local("Microsoft Yahei");}';
+																      document.head.insertBefore(el, document.getElementById('font-hack'));
+																  }
+	</script>
+	<title>Examples - Apache ECharts</title>
+	<style>html, body {
+	    /* position: sticky should not have overflow parents.*/
+	    overflow-x: hidden;}
+	</style>
+	<link rel="stylesheet" href="echarts.apache.org/cdn.jsdelivr.net/npm/element-ui@2.13.2/lib/theme-chalk/index.css">
+	<link rel="stylesheet" href="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/css/example-bundle.css?_v_=4e03a5649f">
+	<style type="text/css">/* Copyright 2014-present Evernote Corporation. All rights reserved. */
 
-      @keyframes caretBlink {
-          from { opacity: 1.0; }
-          to { opacity: 0.0; }
-      }
+	 @keyframes caretBlink {
+             from { opacity: 1.0; }
+             to { opacity: 0.0; }
+	 }
 
-      @keyframes rotateSpinner {
-          from {
-              transform:rotate(0deg);
-          }
-          to {
-              transform:rotate(360deg);
-          }
-      }
+	 @keyframes rotateSpinner {
+             from {
+		 transform:rotate(0deg);
+             }
+             to {
+		 transform:rotate(360deg);
+             }
+	 }
 
-      #text-tool-caret {
-          animation-name: caretBlink;
-          animation-iteration-count: infinite;
-          animation-timing-function: cubic-bezier(1.0,0,0,1.0);
-          animation-duration: 1s;
-      }
+	 #text-tool-caret {
+             animation-name: caretBlink;
+             animation-iteration-count: infinite;
+             animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+             animation-duration: 1s;
+	 }
 
-      #en-markup-loading-spinner {
-          position: absolute;
-          top: calc(50% - 16px);
-          left: calc(50% - 16px);
-          width: 32px;
-          height: 32px;
-      }
+	 #en-markup-loading-spinner {
+             position: absolute;
+             top: calc(50% - 16px);
+             left: calc(50% - 16px);
+             width: 32px;
+             height: 32px;
+	 }
 
-      #en-markup-loading-spinner img {
-          position: relative;
-          top: 0px;
-          left: 0px;
-          animation-name: rotateSpinner;
-          animation-duration: 0.6s;
-          animation-iteration-count: infinite;
-          animation-timing-function: linear;
-      }
-    </style>
-    <style type="text/css">
-      /* Copyright 2014-present Evernote Corporation. All rights reserved. */
-      .skitchToastBoxContainer {
-          position: absolute;
-          width: 100%;
-          text-align: center;
-          top: 30px;
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          pointer-events: none;
-      }
+	 #en-markup-loading-spinner img {
+             position: relative;
+             top: 0px;
+             left: 0px;
+             animation-name: rotateSpinner;
+             animation-duration: 0.6s;
+             animation-iteration-count: infinite;
+             animation-timing-function: linear;
+	 }
+	</style>
+	<style type="text/css">
+	 /* Copyright 2014-present Evernote Corporation. All rights reserved. */
+	 .skitchToastBoxContainer {
+             position: absolute;
+             width: 100%;
+             text-align: center;
+             top: 30px;
+             -webkit-user-select: none;
+             -moz-user-select: none;
+             pointer-events: none;
+	 }
 
-      .skitchToastBox {
-          width: 200px;
-          height: 16px;
-          padding: 12px;
-          background-color: rgba(47, 55, 61, 0.95);
-          border-radius: 4px;
-          color: white;
-          cursor: default;
-          font-size: 10pt;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.32);
-          font-family: 'Soleil', Helvetica, Arial, sans-serif;
-          border: 2px rgba(255, 255, 255, 0.38) solid;
-      }
+	 .skitchToastBox {
+             width: 200px;
+             height: 16px;
+             padding: 12px;
+             background-color: rgba(47, 55, 61, 0.95);
+             border-radius: 4px;
+             color: white;
+             cursor: default;
+             font-size: 10pt;
+             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.32);
+             font-family: 'Soleil', Helvetica, Arial, sans-serif;
+             border: 2px rgba(255, 255, 255, 0.38) solid;
+	 }
 
-      .lang-zh-cn .skitchToastBox {
-          font-family: '微软雅黑', 'Microsoft YaHei', SimSun,
-                       '&#x30E1;&#x30A4;&#x30EA;&#x30AA;', Meiryo, 'MS PGothic', 'Soleil',
-                       Helvetica, Arial, sans-serif;
-      }
+	 .lang-zh-cn .skitchToastBox {
+             font-family: '微软雅黑', 'Microsoft YaHei', SimSun,
+             '&#x30E1;&#x30A4;&#x30EA;&#x30AA;', Meiryo, 'MS PGothic', 'Soleil',
+             Helvetica, Arial, sans-serif;
+	 }
 
-      .lang-ja-jp .skitchToastBox {
-          font-family: '&#x30E1;&#x30A4;&#x30EA;&#x30AA;', Meiryo, 'MS PGothic',
-                       '微软雅黑', 'Microsoft YaHei', SimSun, 'Soleil', Helvetica, Arial,
-                       sans-serif;
-      }
+	 .lang-ja-jp .skitchToastBox {
+             font-family: '&#x30E1;&#x30A4;&#x30EA;&#x30AA;', Meiryo, 'MS PGothic',
+             '微软雅黑', 'Microsoft YaHei', SimSun, 'Soleil', Helvetica, Arial,
+             sans-serif;
+	 }
 
-      .skitchToast {
-          padding-left: 20px;
-          padding-right: 20px;
-          display: inline-block;
-          height: 10px;
-          color: #f1f5f8;
-          text-align: center;
-      }
+	 .skitchToast {
+             padding-left: 20px;
+             padding-right: 20px;
+             display: inline-block;
+             height: 10px;
+             color: #f1f5f8;
+             text-align: center;
+	 }
 
-      .skitchVisible {
-          /* Don't remove this class it's a hack used by the Evernote Clipper */
-      }
-    </style>
-    <style type="text/css">/* Copyright 2014-present Evernote Corporation. All rights reserved. */
-    </style>
-    <style type="text/css">/* Copyright 2019-present Evernote Corporation. All rights reserved. */
+	 .skitchVisible {
+             /* Don't remove this class it's a hack used by the Evernote Clipper */
+	 }
+	</style>
+	<style type="text/css">/* Copyright 2014-present Evernote Corporation. All rights reserved. */
+	</style>
+	<style type="text/css">/* Copyright 2019-present Evernote Corporation. All rights reserved. */
 
-      #en-markup-disabled {
-          position: fixed;
-          z-index: 9999;
-          width: 100%;
-          height: 100%;
-          top: 0px;
-          left: 0px;
-          cursor: default;
-          -webkit-user-select: none;
-      }
+	 #en-markup-disabled {
+             position: fixed;
+             z-index: 9999;
+             width: 100%;
+             height: 100%;
+             top: 0px;
+             left: 0px;
+             cursor: default;
+             -webkit-user-select: none;
+	 }
 
-      #en-markup-alert-container {
-          position: absolute;
-          z-index: 9999;
-          width: 450px;
-          left: calc(50% - 225px);
-          top: calc(50% - 85px);
-          background-color: white;
-          box-shadow: 0 2px 7px 1px rgba(0,0,0,0.35);
-          -webkit-user-select: none;
-      }
+	 #en-markup-alert-container {
+             position: absolute;
+             z-index: 9999;
+             width: 450px;
+             left: calc(50% - 225px);
+             top: calc(50% - 85px);
+             background-color: white;
+             box-shadow: 0 2px 7px 1px rgba(0,0,0,0.35);
+             -webkit-user-select: none;
+	 }
 
-      #en-markup-alert-container .cell-1 {
-          position: relative;
-          height: 110px;
-          width: 105px;
-          float: left;
-          text-align: center;
-          background-position: 65% 50%;
-          background-repeat: no-repeat;
-      }
+	 #en-markup-alert-container .cell-1 {
+             position: relative;
+             height: 110px;
+             width: 105px;
+             float: left;
+             text-align: center;
+             background-position: 65% 50%;
+             background-repeat: no-repeat;
+	 }
 
-      #en-markup-alert-container .cell-2 {
-          position: relative;
-          float: left;
-          width: 345px;
-          margin-top: 29px;
-          margin-bottom: 20px;
-      }
+	 #en-markup-alert-container .cell-2 {
+             position: relative;
+             float: left;
+             width: 345px;
+             margin-top: 29px;
+             margin-bottom: 20px;
+	 }
 
-      #en-markup-alert-container .cell-2 .cell-2-title {
-          margin-bottom: 5px;
-          padding-right: 30px;
-          font-size: 12pt;
-          font-family: Tahoma, Arial;
-      }
+	 #en-markup-alert-container .cell-2 .cell-2-title {
+             margin-bottom: 5px;
+             padding-right: 30px;
+             font-size: 12pt;
+             font-family: Tahoma, Arial;
+	 }
 
-      #en-markup-alert-container .cell-2 .cell-2-message {
-          padding-right: 30px;
-          font-size: 9.5pt;
-          font-family: Tahoma, Arial;
-      }
+	 #en-markup-alert-container .cell-2 .cell-2-message {
+             padding-right: 30px;
+             font-size: 9.5pt;
+             font-family: Tahoma, Arial;
+	 }
 
-      #en-markup-alert-container .cell-3 {
-          position: relative;
-          width: 450px;
-          height: 60px;
-          float: left;
-          background-color: rgb(240,240,240);
-      }
+	 #en-markup-alert-container .cell-3 {
+             position: relative;
+             width: 450px;
+             height: 60px;
+             float: left;
+             background-color: rgb(240,240,240);
+	 }
 
-      #en-markup-alert-container .cell-3 button {
-          position: absolute;
-          top: 12px;
-          right: 15px;
-          width: 110px;
-          height: 36px;
-      }
+	 #en-markup-alert-container .cell-3 button {
+             position: absolute;
+             top: 12px;
+             right: 15px;
+             width: 110px;
+             height: 36px;
+	 }
 
-      #en-markup-alert-container .cell-3 button.alt-button {
-          position: absolute;
-          top: 12px;
-          right: 140px;
-          width: 110px;
-          height: 36px;
-      }
-    </style>
+	 #en-markup-alert-container .cell-3 button.alt-button {
+             position: absolute;
+             top: 12px;
+             right: 140px;
+             width: 110px;
+             height: 36px;
+	 }
+	</style>
 
-  </head>
-  <body class="   pace-done pace-done">
-    <div class="pace  pace-inactive pace-inactive">
-      <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
-        <div class="pace-progress-inner"></div>
-      </div>
-      <div class="pace-activity"></div>
-    </div>
-    <div id="main">
-      <nav id="ec-example-nav" class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false" class="navbar-toggle collapsed">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a href="#" class="navbar-brand">
-              <img src="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/zh/images/logo.png?_v_=20200710_1" alt="echarts logo" class="navbar-logo"></a>
-          </div>
-          <div id="navbar-collapse" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav navpbar-left">
-              <li id="nav-index">
-                <a href="#">导航</a>
-              </li>
-              <li id="nav-doc">
-                <a onclick="lsy_toggle_part('#model_repository')">仓库<b class="caret"></b></a>
-              </li>
-              <li id="nav-doc">
-                <a onclick="lsy_toggle_part('#b_charts')">分箱<b class="caret"></b></a>
-              </li>
-              <li id="nav-doc">
-                <a onclick="lsy_toggle_part('#b_charts')">聚类<b class="caret"></b></a>
-              </li>
-              <li id="nav-doc">
-                <a onclick="lsy_toggle_part('#b_charts')">结果<b class="caret"></b></a>
-              </li>
-              <li id="nav-contribute">
-                <a href="#" data-toggle="dropdown" class="dropdown-toggle">社区<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/events.html">活动</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/committers.html">贡献者列表</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/maillist.html">邮件列表</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/contributing.html">如何贡献</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/dependencies.html">依赖项</a></li>
-                  <li><a href="echarts.apache.org/echarts.apache.org/zh/coding-standard.html">代码规范</a></li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-      <div class="page-main">
-        <div id="ec-example-main">
-          <div id="example-explore">
-            <div id="left-container">
-              <div id="left-chart-nav" class="uk-card uk-card-default uk-card-body">
-                <ul class="uk-nav-default uk-nav-parent-icon" uk-nav>
-                  <li class="uk-active"><a style='font-size:16;font-weight:900'>工具</a></li>
-                  <li class="uk-active"><a onclick="load_model_repository()">模型加载</a></li>
-                  <li class="uk-active"><a onclick="load_b_html()">绘制分箱</a></li>
-                  <li class="uk-parent">
-                    <a style='width:195px' href="#">指标筛选</a>
-                    <ul>
-                        <form class="uk-grid-small uk-margin-small-left uk-margin-small-right" uk-grid style='width:175px'>
-                          <div class="uk-width-1-2@s">
-                            <input id="bif_mean_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="mean>=">
-                          </div>
-                          <div class="uk-width-1-2@s">
-                            <input id="bif_mean_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="mean<=">
-                          </div>
-                          <div class="uk-width-1-2@s">
-                            <input id="bif_porp_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="porp>=">
-                          </div>
-                          <div class="uk-width-1-2@s">
-                            <input id="bif_porp_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="porp<=">
-                          </div>
-                          <div class="uk-width-1-2@s">
-                            <input id="bif_ent_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="ent>=">
-                          </div>
-                          <div class="uk-width-1-2@s">
-                            <input id="bif_ent_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="ent<=">
-                          </div>
-                        </form>
-                        <a onclick="submit_bif()">提交筛选</a>
-                        <a onclick="save_selected()">提交指标</a>
-                        <form class="uk-grid-small uk-margin-left uk-margin-small-right" uk-grid style='margin-top:0cm'>
-                          <input id="save_selected_symbol" class="uk-input uk-form-small" type="text" placeholder="提交指标描述">
-                        </form>
-                    </ul>
-                  </li>
-		  <li class="uk-parent">
-                    <a style='width:195px' href="#">指标聚类</a>
-                    <ul>
-                        <form class="uk-grid-small uk-margin-small-left uk-margin-small-right" uk-grid style='width:175px'>
-                          <div>
-                            <input id="ruleN" class="cluster_threshold uk-input uk-form-small" type="text" placeholder="cat">
-                          </div>
-                          <div>
-                            <input id="ruleD" class="cluster_threshold uk-input uk-form-small" type="text" placeholder="dist">
-                          </div>
-                        </form>
-                        <a onclick="load_cluster_html()">执行聚类</a>
-                        <a onclick="save_cluster()">提交聚类</a>
-                        <form class="uk-grid-small uk-margin-left uk-margin-small-right" uk-grid style='margin-top:0cm'>
-                          <input id="save_cluster_symbol" class="uk-input uk-form-small" type="text" placeholder="提交指标描述">
-                        </form>
-                    </ul>
-                  </li>		  
-                  <li class="uk-active"><a onclick="load_cluster_html()">指标聚类</a></li>
-                  <li class="uk-active"><a onclick="load_b_html()">模型训练</a></li>
-                </ul>
-              </div>
+    </head>
+    <body class="   pace-done pace-done">
+	<div class="pace  pace-inactive pace-inactive">
+	    <div class="pace-progress" data-progress-text="100%" data-progress="99" style="transform: translate3d(100%, 0px, 0px);">
+		<div class="pace-progress-inner"></div>
+	    </div>
+	    <div class="pace-activity"></div>
+	</div>
+	<div id="main">
+	    <nav id="ec-example-nav" class="navbar navbar-default navbar-fixed-top">
+		<div class="container-fluid">
+		    <div class="navbar-header">
+			<button type="button" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false" class="navbar-toggle collapsed">
+			    <span class="sr-only">Toggle navigation</span>
+			    <span class="icon-bar"></span>
+			    <span class="icon-bar"></span>
+			    <span class="icon-bar"></span>
+			</button>
+			<a href="#" class="navbar-brand">
+			    <img src="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/zh/images/logo.png?_v_=20200710_1" alt="echarts logo" class="navbar-logo"></a>
+		    </div>
+		    <div id="navbar-collapse" class="collapse navbar-collapse">
+			<ul class="nav navbar-nav navpbar-left">
+			    <li id="nav-index">
+				<a href="#">导航</a>
+			    </li>
+			    <li id="nav-doc">
+				<a onclick="lsy_toggle_part('#model_repository')">仓库<b class="caret"></b></a>
+			    </li>
+			    <li id="nav-doc">
+				<a onclick="lsy_toggle_part('#b_charts')">分箱<b class="caret"></b></a>
+			    </li>
+			    <li id="nav-doc">
+				<a onclick="lsy_toggle_part('#cluster_charts')">聚类<b class="caret"></b></a>
+			    </li>
+			    <li id="nav-doc">
+				<a onclick="lsy_toggle_part('#b_charts')">结果<b class="caret"></b></a>
+			    </li>
+			    <li id="nav-contribute">
+				<a href="#" data-toggle="dropdown" class="dropdown-toggle">社区<b class="caret"></b></a>
+				<ul class="dropdown-menu">
+				    <li><a href="echarts.apache.org/echarts.apache.org/zh/events.html">活动</a></li>
+				    <li><a href="echarts.apache.org/echarts.apache.org/zh/committers.html">贡献者列表</a></li>
+				    <li><a href="echarts.apache.org/echarts.apache.org/zh/maillist.html">邮件列表</a></li>
+				    <li><a href="echarts.apache.org/echarts.apache.org/zh/contributing.html">如何贡献</a></li>
+				    <li><a href="echarts.apache.org/echarts.apache.org/zh/dependencies.html">依赖项</a></li>
+				    <li><a href="echarts.apache.org/echarts.apache.org/zh/coding-standard.html">代码规范</a></li>
+				</ul>
+			    </li>
+			</ul>
+		    </div>
+		</div>
+	    </nav>
+	    <div class="page-main">
+		<div id="ec-example-main">
+		    <div id="example-explore">
+			<div id="left-container">
+			    <div id="left-chart-nav" class="uk-card uk-card-default uk-card-body">
+				<ul class="uk-nav-default uk-nav-parent-icon" uk-nav>
+				    <li class="uk-active"><a style='font-size:16;font-weight:900'>工具</a></li>
+				    <li class="uk-active"><a onclick="load_model_repository()">模型加载</a></li>
+				    <li class="uk-active"><a onclick="load_b_html()">绘制分箱</a></li>
+				    <li class="uk-parent">
+					<a style='width:195px' href="#">指标筛选</a>
+					<ul>
+					    <form class="uk-grid-small uk-margin-small-left uk-margin-small-right" uk-grid style='width:175px'>
+						<div class="uk-width-1-2@s">
+						    <input id="bif_mean_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="mean>=">
+						</div>
+						<div class="uk-width-1-2@s">
+						    <input id="bif_mean_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="mean<=">
+						</div>
+						<div class="uk-width-1-2@s">
+						    <input id="bif_porp_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="porp>=">
+						</div>
+						<div class="uk-width-1-2@s">
+						    <input id="bif_porp_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="porp<=">
+						</div>
+						<div class="uk-width-1-2@s">
+						    <input id="bif_ent_min" class="bif_threshold uk-input uk-form-small" type="text" placeholder="ent>=">
+						</div>
+						<div class="uk-width-1-2@s">
+						    <input id="bif_ent_max" class="bif_threshold uk-input uk-form-small" type="text" placeholder="ent<=">
+						</div>
+					    </form>
+					    <a onclick="submit_bif()">提交筛选</a>
+					    <a onclick="save_selected()">提交指标</a>
+					    <form class="uk-grid-small uk-margin-left uk-margin-small-right" uk-grid style='margin-top:0cm'>
+						<input id="save_selected_symbol" class="uk-input uk-form-small" type="text" placeholder="提交指标描述">
+					    </form>
+					</ul>
+				    </li>
+				    <li class="uk-parent">
+					<a style='width:195px' href="#">指标聚类</a>
+					<ul>
+					    <form class="uk-grid-small uk-margin-small-left uk-margin-small-right" uk-grid style='width:175px'>
+						<div>
+						    <input id="ruleN" class="cluster_threshold uk-input uk-form-small" type="text" placeholder="cat">
+						</div>
+						<div>
+						    <input id="ruleD" class="cluster_threshold uk-input uk-form-small" type="text" placeholder="dist">
+						</div>
+					    </form>
+					    <a onclick="load_cluster_html()">执行聚类</a>
+					    <a onclick="save_cluster()">提交聚类</a>
+					    <form class="uk-grid-small uk-margin-left uk-margin-small-right" uk-grid style='margin-top:0cm'>
+						<input id="save_cluster_symbol" class="uk-input uk-form-small" type="text" placeholder="提交指标描述">
+					    </form>
+					</ul>
+				    </li>		  
+				    <li class="uk-parent">
+					<a style='width:195px' href="#">模型训练</a>
+					<ul>
+					    <form class="uk-grid-small uk-margin-small-left uk-margin-small-right" uk-grid style='width:175px'>
+						<div>
+						    <input id="train_split_quant" class="train_threshold uk-input uk-form-small" type="text" placeholder="split_quantile">
+						</div>
+						<div>
+						    <input id="train_c" class="train_threshold uk-input uk-form-small" type="text" placeholder="C">
+						</div>
+					    </form>
+					    <a onclick="train()">执行训练</a>
+					    <a onclick="save_train()">提交训练</a>
+					    <form class="uk-grid-small uk-margin-left uk-margin-small-right" uk-grid style='margin-top:0cm'>
+						<input id="save_train_symbol" class="uk-input uk-form-small" type="text" placeholder="提交指标描述">
+					    </form>
+					</ul>
+				    </li>
+				</ul>
+			    </div>
 
-            </div>
-            <div id="explore-container">
-              <div class="example-list-panel">
-                <div id='model_repository' hidden>
-                  <h3 id="chart-type-line" class="chart-type-head" type="button">模型仓库</h3>
-                  <div class="uk-child-width-1-4@m uk-grid-small uk-grid-match" uk-grid id="model_repository_container">
-                  </div>
-                  <h3 id="chart-type-line" class="chart-type-head"></h3>
-                </div>
-                <div id='b_charts' style="width: auto">
-                </div>
-                <div id='cluster_charts' style="width: auto">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/zh/js/common.js?_v_=b5b8944fb9"></script>
-    <script src="echarts.apache.org/cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js"></script>
-    <script src="echarts.apache.org/cdn.jsdelivr.net/npm/element-ui@2.13.2/lib/index.js"></script>
-    <script src="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/js/example-bundle.js?_v_=3020d4307e"></script>
-    <script type="text/javascript">document.getElementById('nav-examples').className = 'active';
-      window.EC_WWW_CDN_PAY_ROOT = 'echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site';
-    </script>
-    <script type="text/javascript">window.globalArgsExtra = {
-    page: 'explore',
-    locale: 'zh'
-};
-    </script>
-    <script type="text/javascript">var _hmt = _hmt || [];
-      (function() {
-          var hm = document.createElement("script");
-          hm.src = "echarts.apache.org/hm.baidu.com/hm.js?54b918eee37cb8a7045f0fd0f0b24395";
-          var s = document.getElementsByTagName("script")[0];
-          s.parentNode.insertBefore(hm, s);
-      })();
-    </script>
-    <script type="text/javascript" async="" src="echarts.apache.org/www.googletagmanager.com/gtag/js?id=UA-141228404-1"></script>
-    <script type="text/javascript">window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'UA-141228404-1');    </script>
-  </body>
+			</div>
+			<div id="explore-container">
+			    <div class="example-list-panel">
+				<div id='model_repository' style="width:auto" hidden>
+				</div>
+				<div id='b_charts' style="width:auto;margin-top:30px;" hidden>
+				</div>
+				<div id='cluster_charts' style="width: auto;margin-top:30px;" hidden>
+				</div>
+				<div id='model_result' style="width: auto;margin-top:30px;" hidden>
+				</div>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+	<script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/zh/js/common.js?_v_=b5b8944fb9"></script>
+	<script src="echarts.apache.org/cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js"></script>
+	<script src="echarts.apache.org/cdn.jsdelivr.net/npm/element-ui@2.13.2/lib/index.js"></script>
+	<script src="echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/js/example-bundle.js?_v_=3020d4307e"></script>
+	<script type="text/javascript">document.getElementById('nav-examples').className = 'active';
+	 window.EC_WWW_CDN_PAY_ROOT = 'echarts.apache.org/cdn.jsdelivr.net/gh/apache/echarts-website@asf-site';
+	</script>
+	<script type="text/javascript">window.globalArgsExtra = {
+	     page: 'explore',
+	     locale: 'zh'
+	 };
+	</script>
+	<script type="text/javascript">var _hmt = _hmt || [];
+	 (function() {
+             var hm = document.createElement("script");
+             hm.src = "echarts.apache.org/hm.baidu.com/hm.js?54b918eee37cb8a7045f0fd0f0b24395";
+             var s = document.getElementsByTagName("script")[0];
+             s.parentNode.insertBefore(hm, s);
+	 })();
+	</script>
+	<script type="text/javascript" async="" src="echarts.apache.org/www.googletagmanager.com/gtag/js?id=UA-141228404-1"></script>
+	<script type="text/javascript">window.dataLayer = window.dataLayer || [];
+	 function gtag(){dataLayer.push(arguments);}
+	 gtag('js', new Date());
+	 gtag('config', 'UA-141228404-1');    </script>
+    </body>
 </html>

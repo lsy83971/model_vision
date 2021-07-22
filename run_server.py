@@ -25,7 +25,7 @@ import flask
 from flask import request
 import traceback
 import os
-from RAW.logitSDK import loader
+from RAW.logitSDK import loader, cond_part, step_train
 import uuid
 HOST = "0.0.0.0"
 PORT = 5005
@@ -69,6 +69,16 @@ def save_selected():
     print("***************")
     return {"a": 1}
 
+@app.route("/save_cluster", methods=["POST"])
+def save_cluster():
+    _d = request.get_json()
+    ld = get_loader(_d)
+    ld.save_cluster(_d["cluster_index"], symbol = _d["symbol"])
+    print(_d)
+    return {"a": 1}
+
+
+
 @app.route("/cluster", methods=["POST"])
 def cluster():
     _d = request.get_json()
@@ -101,6 +111,25 @@ def cluster():
                            bif_ent = bif_ent,
                            cluster_res=cluster_res,
     )
+
+@app.route("/train", methods=["POST"])
+def train():
+    _d = request.get_json()
+    print(_d)
+    ld = get_loader(_d)
+    xy = ld.load_woe_x(_d["train_cols"] + ["label", "dt"])
+    x = xy.drop(["label", "dt"], axis=1)
+    y = xy["label"]
+    dt = pd.to_datetime(xy["dt"])
+    ent = ld.load_ent()
+    sample_cond = cond_part(dt, float(_d["train_split_quant"]))
+    res = step_train(x.loc[sample_cond[0]],
+                     y.loc[sample_cond[0]],
+                     ent, mode="l1",
+                     C=float(_d["C"]), 
+    )
+    print(res)
+    return {"a": 1}
 
 @app.route("/test", methods=["GET"])
 def test():
