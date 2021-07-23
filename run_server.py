@@ -25,7 +25,10 @@ import flask
 from flask import request
 import traceback
 import os
-from RAW.logitSDK import loader, cond_part, step_train
+from RAW.logitSDK import recorder, cond_part, step_train, model_result
+from RAW.recorder import echarts_plot
+
+from RAW.int import binning
 import uuid
 HOST = "0.0.0.0"
 PORT = 5005
@@ -56,7 +59,7 @@ logger.setLevel(logging.INFO)
 
 
 def get_loader(data):
-    ld = loader(data["name"], data["db"], data["dir"])
+    ld = recorder().from_name(data["name"], data["db"], data["dir"])
     return ld
 
 @app.route("/save_selected", methods=["POST"])
@@ -77,14 +80,12 @@ def save_cluster():
     print(_d)
     return {"a": 1}
 
-
-
 @app.route("/cluster", methods=["POST"])
 def cluster():
     _d = request.get_json()
     ld = get_loader(_d)
     cl = ld.load_cluster()
-    cmt = ld.load_table("comment").set_index("index")["comment"].  to_dict()
+    cmt = ld.load_comment().  to_dict()
     html_path = pd.Series(ld.load_html_map())
     html_path = html_path.apply(cpath).to_dict()
     try:
@@ -114,42 +115,93 @@ def cluster():
 
 @app.route("/train", methods=["POST"])
 def train():
+    #_d={"train_cols":sb.woevalue.columns.tolist(),"train_split_quant":0.7,"C":0.1}    
     _d = request.get_json()
-    print(_d)
     ld = get_loader(_d)
     xy = ld.load_woe_x(_d["train_cols"] + ["label", "dt"])
     x = xy.drop(["label", "dt"], axis=1)
     y = xy["label"]
     dt = pd.to_datetime(xy["dt"])
     ent = ld.load_ent()
+    cmt = ld.load_comment()
     sample_cond = cond_part(dt, float(_d["train_split_quant"]))
+    sample_cond_dict = {"train": sample_cond[0], "test": sample_cond[1]}
     res = step_train(x.loc[sample_cond[0]],
                      y.loc[sample_cond[0]],
                      ent, mode="l1",
                      C=float(_d["C"]), 
     )
-    print(res)
-    return {"a": 1}
+    model = res["model"]
+    cols = res["cols"]
 
-@app.route("/test", methods=["GET"])
-def test():
-    return render_template("test1.html", a=1)
+    x1 = x[cols]
+    quant = 10
+    score = pd.Series(model.predict_proba(x1)[:, 1], index = x1.index)
+    standard_woe = math.log(((y == 1).sum() + 0.5) / ((y == 0).sum() + 0.5))    
+    ticks = binning.tick(
+        x = score, quant = quant,
+        single_tick = False,
+        ruleV = score.shape[0] / quant / 2,
+        mode = "v"). ticks_boundaries()
+    mr = model_result().from_result(
+        model = model,
+        cols = cols,
+        ticks = ticks,
+        standard_woe = standard_woe,
+        binning_tools = ld.load_binning_tools(),
+        train_cond = sample_cond_dict, 
+    )
+    t_info = dict()
+    t_info["train"] = mr.binning_sample(x.loc[sample_cond[0], cols], y.loc[sample_cond[0]])
+    t_info["test"] = mr.binning_sample(x.loc[sample_cond[1], cols], y.loc[sample_cond[1]])
+    api_info = {i: j["binning"] for i, j in t_info.items()}
+    api_info["train"]. r1({"总数": "cnt", "提升": "mean"})
+    api_info["test"]. r1({"总数": "cnt", "提升": "mean"})
+    x_label = api_info["test"]. index.tolist()
+    bar = echarts_plot(x_label, api_info, UPPER=5)
+    bar_html = bar.render_embed(template_name = "simple_chart_body.html")
+    index_info = pd.concat(
+        [ent.loc[cols], 
+         mr.coef,
+         cmt], join="inner", axis=1).reset_name("指标")
+    index_info.r1({"ent": "区分度", "comment": "中文名"})
+    index_info["区分度"] = index_info["区分度"]. apply(lambda x:round(x, 6))
+    index_info["系数"] = index_info["系数"]. apply(lambda x:round(x, 6))    
+    result_info = pd.DataFrame(t_info).drop("binning")
+    result_info = result_info.reset_name("")
+    result_info["train"] = result_info["train"]. apply(lambda x:round(x, 4))
+    result_info["test"] = result_info["test"]. apply(lambda x:round(x, 4))
+    result_path = uuid.uuid4().hex + ".pkl"
+    if not os.path.exists(ld.cache):
+        os.mkdir(ld.cache)
+    mr.save(ld.cache + result_path)
+    return render_template('train_result.html',
+                           bar_html = bar_html,
+                           index_info = index_info, 
+                           result_info = result_info,
+                           result_path = result_path, 
+    )
 
-@app.route("/test1", methods=["POST"])
-def test1():
+@app.route("/save_result", methods=["POST"])
+def save_result():
     _d = request.get_json()
-    return _d
+    ld = get_loader(_d)
+    mr_path = ld.cache + _d["mr_path"]
+    mr = model_result().load_pattern(pd.read_pickle(mr_path))
+    _id = str(datetime.now().strftime("%Y%m%d_%H%M%S_%s"))
+    report_path = ld.saved_result + "modelreport_{0}.xlsx". format(_id)
+    result_path = ld.saved_result + "modelresult_{0}.pkl". format(_id)        
+    ld.r_model_report(mr, path=report_path)
+    os.system("cp {0} {1}". format(mr_path, result_path))
+    return {"a": 1}
 
 @app.route("/b_html", methods=["POST"])
 def get_b_html():
     _d = request.get_json()
-    ## print("***************")
-    ## print(_d)
-    ## print("***************")
     ld = get_loader(_d)
     html_path = pd.Series(ld.load_html_map())
     html_path = html_path.apply(cpath).to_dict()
-    cmt = ld.load_table("comment").set_index("index")["comment"].  to_dict()
+    cmt = ld.load_comment().  to_dict()
     try:
         bif_mean = ld.load_table("bifurcate").set_index("index")["bif_mean"].  to_dict()
         bif_porp = ld.load_table("bifurcate").set_index("index")["bif_porp"].  to_dict()
@@ -169,7 +221,7 @@ def get_b_html():
 
 @app.route("/model_repository", methods=["GET"])
 def model_repository():
-    _df = loader.load_recorder()
+    _df = recorder.load_recorder()
     model_info = list()
     for j1, j2 in _df.iterrows():
         _i = j2.copy()

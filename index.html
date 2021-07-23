@@ -184,8 +184,15 @@
 
 	 // 3.训练
 	 
-	 function train_ready_func(xmlhttp){
-             alert("保存指标完成！")
+	  function train_ready_func(xmlhttp){
+              document.getElementById("model_result").innerHTML=xmlhttp.responseText;
+              obj = document.getElementById("model_result");
+              obj1 = obj.getElementsByTagName("script");
+              for (var i=0;i<obj1.length;i++){
+		  eval(obj1[i].innerHTML);
+              }
+	      lsy_show_part('#model_result');
+              alert("训练完成！")
 	 }
 
 	 function train_param(){
@@ -203,7 +210,6 @@
              //model_param["symbol"]=document.getElementById("save_train_symbol").value;
 	     model_param["train_split_quant"]=document.getElementById("train_split_quant").value;
              model_param["C"]=document.getElementById("train_c").value;
-             alert("开始训练1！")	     	     
              return model_param;
 	 }
 
@@ -211,6 +217,51 @@
              var params=train_param();
              send_post(url='/train',params=params,ready_func=train_ready_func);
 	 }
+
+
+
+	 // 3.训练
+	 
+	  function save_result_ready_func(xmlhttp){
+              alert("模型结果已保存！")
+	 }
+
+	 function save_result_param(){
+             alert("开始！")	     
+             var model_param=load_model_param();
+             model_param["mr_path"] = $("#model_result_path").attr("result_path");
+             return model_param;
+	 }
+
+	 function save_result(){
+             var params=save_result_param();
+             send_post(url='/save_result',params=params,ready_func=save_result_ready_func);
+	 }
+
+	 // 3.保存初筛指标
+	 function save_selected_ready_func(xmlhttp){
+             alert("保存初筛完成！")
+	 }
+
+	 function save_selected_param(){
+             var model_param=load_model_param();
+             var selected_list=new Array();
+             $("div.charts-index-selected").each(
+		 function(){
+                     selected_list.push($(this).attr("name"));
+		 }
+             );
+             model_param["selected_index"] = selected_list;
+             var symbol=document.getElementById("save_selected_symbol").value;
+             model_param["symbol"]=symbol;
+             return model_param;
+	 }
+
+	 function save_selected(){
+             var params=save_selected_param();
+             send_post(url='/save_selected',params=params,ready_func=save_selected_ready_func);
+	 }
+	  
 	 // 3.保存聚类指标
 	 function save_cluster_ready_func(xmlhttp){
              alert("保存聚类指标完成！")
@@ -585,7 +636,7 @@
 				<a onclick="lsy_toggle_part('#cluster_charts')">聚类<b class="caret"></b></a>
 			    </li>
 			    <li id="nav-doc">
-				<a onclick="lsy_toggle_part('#b_charts')">结果<b class="caret"></b></a>
+				<a onclick="lsy_toggle_part('#model_result')">结果<b class="caret"></b></a>
 			    </li>
 			    <li id="nav-contribute">
 				<a href="#" data-toggle="dropdown" class="dropdown-toggle">社区<b class="caret"></b></a>
@@ -671,7 +722,7 @@
 						</div>
 					    </form>
 					    <a onclick="train()">执行训练</a>
-					    <a onclick="save_train()">提交训练</a>
+					    <a onclick="save_result()">提交训练</a>
 					    <form class="uk-grid-small uk-margin-left uk-margin-small-right" uk-grid style='margin-top:0cm'>
 						<input id="save_train_symbol" class="uk-input uk-form-small" type="text" placeholder="提交指标描述">
 					    </form>

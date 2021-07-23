@@ -47,10 +47,12 @@ sb.recorder.r_bifurcate()
 sb.recorder.r_corr()
 sb.recorder.r_model_result()
 sb.recorder.r_model_sample()
-sb.recorder.r_model_report()
 sb.recorder.r_ent()
+sb.recorder.r_t_cols()
+sb.recorder.r_model_report(mr=sb.model_result)
 
-sb.recorder.load_html_map()
+
+sb.recorder.load_woe_x(["month"])
 
 from flask import render_template
 #render_template("/home/lishiyu/Project/model_vision/.model_profile/Lgt2021_0722_1435_1626935739/b_html/card_cm_bank12m_pct.html", id="asd")
@@ -290,3 +292,8 @@ UUID('bd65600d-8669-4903-8a14-af88203add38')
 >>> str(uuid.uuid4())
 'f50ec0b7-f960-400d-91f0-c42a6d44e3d0'
 >>> uuid.uuid4().hex
+
+mr1 = model_result().load_pattern(pd.read_pickle("/home/lishiyu/Project/model_vision/.model_profile/Lgt2021_0723_1001_1627005664/.cache/7051b0c788964fd6b2b6f03c679380c1.pkl"))
+mr1.coef
+mr1.result["cols"]
+
