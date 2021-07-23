@@ -1,0 +1,19 @@
+<table style='width:{{200*df.shape[1]}}px' class="uk-table uk-table-small uk-table-striped">
+  <thead>
+    <tr>
+      {% for c in df.columns %}
+      <th style='width:200px'>{{c}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for i,j in df.iterrows() %}
+    <tr>
+      {% for j1 in j %}      
+      <td style='width:200px' class='uk-text-truncate'>{{j1}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}    
+  </tbody>
+</table>
+

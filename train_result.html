@@ -1,0 +1,13 @@
+<h3 id="chart-type-line" class="chart-type-head" type="button">模型输出
+  <span>line</span>
+</h3>
+<div id="model_result_path" result_path={{result_path}} hidden></div>
+<div style="margin-left:0px" class="uk-child-width-1-3@s uk-child-width-1-2@s" uk-grid uk-lightbox="animation: slide" >
+  {{bar_html|safe}}
+</div>
+{% with df= result_info %}    
+{% include 'train_result_table.html' %}
+{% endwith %}
+{% with df= index_info%}    
+{% include 'train_result_table.html' %}
+{% endwith %}    
