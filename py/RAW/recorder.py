@@ -191,7 +191,6 @@ class recorder:
                 self.b_tool_dir,
                 self.cache,
                 self.saved_result,
-                ##
         ]:
             if not os.path.exists(_path):
                 os.mkdir(_path)
