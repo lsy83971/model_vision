@@ -12,7 +12,7 @@ from pyecharts.charts import Bar, Line, Grid
 from .cluster import col_cluster
 import pyecharts.options as opts
 import pandas as pd
-from .recorder import recorder, loader, sub_binning
+from .recorder import recorder, sub_binning
 ## sys path 添加py所在目录
 try:
     _tmp_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))[: -1])
@@ -69,6 +69,7 @@ def lazy_fit_func(self, x, y):
     fit function的惰性形态
     优先从self中取,如果已存则可以省去列计算的代价
     如果self中未发现,则按正常逻辑计算
+    zz
     """
     _res = dict()
     if hasattr(self, "cnt"):
@@ -126,6 +127,7 @@ def step_train(x, y, ent, C, rule=0, mode="l1", step_wise=True):
             continue
         else:
             return {"cols": _cols.tolist(), "model": lrcv_L1}
+        
 
 class lgt:
     default_kwargs = {
@@ -138,6 +140,11 @@ class lgt:
     }
 
     def X_transform(X, trans_rule, trans_v):
+        """
+        trans_rule : column_name -> '.replace(...).fillna(...)'
+                           total -> '.replace(...).fillna(...)'
+        trans_v : variable needed in trans_rule
+        """
         for i, j in trans_v.items():
             globals()[i] = j
         for i in X.columns:
@@ -162,9 +169,7 @@ class lgt:
                  ** model_v,
                  ):
 
-        #add_guests("lgt_init.txt")
-        self.now = datetime.now()
-
+        
         # 1.sample must have datetime information
         assert ("dt" in X.columns)
 
@@ -238,7 +243,7 @@ class lgt:
         self.standard_woe = math.log(((self.Y == 1).sum() + 0.5) / ((self.Y == 0).sum() + 0.5))
 
     def init_tsp(self):
-        self.tsp = "Lgt" + datetime.now().strftime("%Y_%m%d_%H%M_%s")
+        self.tsp = "Lgt" + datetime.now().strftime("%Y_%m%d_%H%M%S_%s")
 
     def init_bintool(self):
         if not hasattr(self, "binning_tools"):
@@ -865,3 +870,5 @@ class binning_excel:
 
 if __name__ == "__main__":
     pass
+
+

@@ -163,6 +163,26 @@ def echarts_plot(x_label, info, UPPER=0.05):
     return bar
 
 class recorder:
+    """
+    recorder 作为代理人处理数据流程 
+    获取入参的过程可以静态和动态
+    保存结果也分静态和动态
+    静态输入-> 静态输出
+    动态输入-> 静态输出+动态输出
+    
+    # TODO: 多分支数据库存储实现
+    需要注意流程单分支 or 多分支
+    1.数据输入->2.分箱->3.指标筛选->4.指标聚类->5.训练
+    1 为单一分支
+    2 3 4 5 为多分支
+    多分支节点需要 建立下级目录进行存储 or 数据库配置keyword进行存储
+    分箱-key2
+    指标筛选-key2 key3
+    指标聚类-key2 key3 key4
+    训练-key2 key3 key4 key5
+    
+    多分支需要建立
+    """
     home = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     global_db = home + "/.model.db"
     def from_m(self, m, cwd=None):
@@ -665,51 +685,4 @@ class recorder:
         return col_cluster.from_data(data=corr, entL=ent)
 
 class loader:
-    home = recorder.home
-    global_db = recorder.global_db
-
-    def __init__(self, name, db, dir):
-        self.name = name
-        self.db = db
-        self.dir = dir
-        self.b_png_dir = self.dir + "b_png/"
-        self.b_html_dir = self.dir + "b_html/"
-        self.cache = self.dir + ".cache/"
-        
-        self.common_dir = os.path.dirname(self.dir[: -1]) + "/"
-        self.common_db = self.common_dir + "model.db"
-
-        import sqlite3
-        self.conn = sqlite3.connect('{0}'.  format(self.db))
-        self.conn_common = sqlite3.connect(self.common_db)
-        self.conn_global = sqlite3.connect(self.global_db)
-
-    add_name = recorder.add_name
-    load_df = recorder.load_df
-    has_table = recorder.has_table
-    load_table = recorder.load_table
-    save_table = recorder.save_table
-    save_cols = recorder.save_cols
-    save_cluster = recorder.save_cluster
-    load_binning_tools = recorder.load_binning_tools
-    load_sub_binning_tools = recorder.load_sub_binning_tools
-    load_sub_cond = recorder.load_sub_cond
-    load_recorder = recorder.load_recorder
-
-    load_html_path = recorder.load_html_path
-    load_html_files = recorder.load_html_files
-    load_html_map = recorder.load_html_map
-
-
-    load_bifurcate = recorder.load_bifurcate
-    load_cols = recorder.load_cols
-    load_comment = recorder.load_comment
-    load_corr = recorder.load_corr
-    load_ent = recorder.load_ent
-    load_cluster = recorder.load_cluster
-    load_x = recorder.load_x
-    load_y = recorder.load_y
-    load_woe_x = recorder.load_woe_x
-    load_woe_y = recorder.load_woe_y
-
-
+    pass

@@ -33,6 +33,7 @@ import uuid
 HOST = "0.0.0.0"
 PORT = 5005
 
+
 ## 建立symlink
 app = flask.Flask(__name__, template_folder='./',static_folder="",static_url_path="")
 def jinja_uuid():
@@ -56,7 +57,6 @@ loghanlder.setFormatter(formatter)
 loghanlder.setLevel(logging.INFO)
 logger.addHandler(loghanlder)
 logger.setLevel(logging.INFO)
-
 
 def get_loader(data):
     ld = recorder().from_name(data["name"], data["db"], data["dir"])
@@ -83,6 +83,7 @@ def save_cluster():
 @app.route("/cluster", methods=["POST"])
 def cluster():
     _d = request.get_json()
+    print(_d)
     ld = get_loader(_d)
     cl = ld.load_cluster()
     cmt = ld.load_comment().  to_dict()
@@ -129,7 +130,7 @@ def train():
     res = step_train(x.loc[sample_cond[0]],
                      y.loc[sample_cond[0]],
                      ent, mode="l1",
-                     C=float(_d["C"]), 
+                     C=float(_d["train_c"]), 
     )
     model = res["model"]
     cols = res["cols"]
@@ -244,6 +245,5 @@ if __name__ == "__main__":
         port=PORT,
         debug=True
     )
-
-
     ############ 修改template
+
