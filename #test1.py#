@@ -4,7 +4,6 @@ import pyecharts.options as opts
 from pyecharts.charts import Bar, Line, Grid
 import pandas as pd
 
-
 sample1 = pd.read_csv("./py/sample1.csv")
 y = pd.read_csv("./py/y.csv")["odhis30_third"]
 sample1["dt"] = pd.Series(pd.date_range("2020-01-01", "2021-01-01")).sample(sample1.shape[0], replace = True).values
@@ -12,21 +11,64 @@ import sys
 sys.path.append("./py")
 
 from importlib import reload
-import RAW.logitSDK
-reload(RAW.logitSDK)
-reload(RAW.cluster)
+import RAW.new
+reload(RAW.new)
+#reload(RAW.cluster)
+os.getcwd()
+os.chdir("/home/lishiyu/Project")
 
-from RAW.logitSDK import lgt, intLDict, cond_part, recorder
-sb = lgt(X = sample1, Y = y)
-#sb = lgt(X = sample1.astype(str), Y = y)
-sb.binning(mode = "B", ruleB = 7)
+from RAW.new import model_flow, model_IO, cond_part, mfs
+sb = mfs().from_data(X = sample1, Y = y)
+sb.binning(mode = "B", ruleB = 7, pass_error=True, remain_ticks=False)
 conds = cond_part(pd.to_datetime(sb.X["dt"]), 0.5)
 sb.draw_binning(conds = conds)
+
+sb.model_IO.save_binning_html()
+sb.model_IO.save_binning_png()
+sb.save_binning()
+
+
+
+
+getattr(sb.model_IO.model, "binning_tools")
+sb.save_binning()
+sb.save_index()
+sb.save_cluster()
+sb.save_cluster()
+sb.corr = 5
+
+sb.model_IO.version_node[2]
+
+sb.a0 = 2
+sb.a1 = 3
+sb.a2 = 7
+sb.model_IO.lv_version
+
+sb.model_IO.lv_saved
+
+from types import MethodType
+sb.model_IO.save_data = MethodType(model_IO.save_data, sb.model_IO)
+
+sb.model_IO.lv_saved
+sb.model_IO.lv
+pd.Series(sb.model_IO.index_saved)
+
+
+
+sb.model_IO.lv_saved
+sb.model_IO.lv_version
+
+
+sb.binning_tools
+sb.model_IO.formatted("binning_tools")
+sb.model_IO.load("binning_tools")
+
+pickle.dumps({"a": 1}).hex()
+pickle.dumps("asdf")
 
 
 sb.recorder.r_binning_png()
 sb.recorder.r_binning_excel()
-
 sb.update_woe()
 ss = sb.var_find()
 

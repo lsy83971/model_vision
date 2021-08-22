@@ -12,7 +12,7 @@ from pyecharts.charts import Bar, Line, Grid
 from .cluster import col_cluster
 import pyecharts.options as opts
 import pandas as pd
-from .recorder import recorder, sub_binning
+from .flow_IO import flow_IO, sub_binning
 ## sys path 添加py所在目录
 try:
     _tmp_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))[: -1])
@@ -128,8 +128,12 @@ def step_train(x, y, ent, C, rule=0, mode="l1", step_wise=True):
         else:
             return {"cols": _cols.tolist(), "model": lrcv_L1}
         
+class model_flow:
 
-class lgt:
+    """
+    类似binning_cnt的不涉及输出的函数卸载lgt里面
+    lgt的代理 和XYwoe涉及大体量数据的时候不用代理
+    """
     default_kwargs = {
         "mode": "b",
         "ruleV": 1000,
@@ -138,6 +142,14 @@ class lgt:
         "ruleC": -0.0001,
         "quant": 30,
     }
+
+    def from_info(
+            self, 
+            X,
+            Y,
+            cmt=None,
+            
+    ):
 
     def X_transform(X, trans_rule, trans_v):
         """
@@ -156,19 +168,24 @@ class lgt:
             print("X" + trans_rule["total"])
             X = eval("X" + trans_rule["total"])
         return X
+    def __init__(self, **kwargs):
+        for i, j in kwargs.items():
+            setattr(self, i, j)
+        self.flow = work_flow(self)
+        self.flow_IO = flow_IO(self)
 
-
-    def __init__(self,
-                 X,
-                 Y,
-                 cmt = None,
-                 trans_rule = {"total": ".replace(\'\', -999999).fillna(-1)",
-                 },
-                 trans_v = dict(),
-                 record = True,
-                 ** model_v,
-                 ):
-
+    def from_info(
+            self,
+            X,
+            Y,
+            cmt = None,
+            trans_rule = {"total": ".replace(\'\', -999999).fillna(-1)",
+            },
+            trans_v = dict(),
+            record = True,
+            ** model_v,
+    ):
+        self.now = datetime.now()
         
         # 1.sample must have datetime information
         assert ("dt" in X.columns)
@@ -181,7 +198,7 @@ class lgt:
 
         # 3.preprocess transform
         X["month"] = pd.to_datetime(X["dt"]).dt.strftime("%Y-%m")
-        X = lgt.X_transform(X = X, trans_rule = trans_rule, trans_v = trans_v)
+        X = model_flow.X_transform(X = X, trans_rule = trans_rule, trans_v = trans_v)
 
         # 4.type transform str->float
         dtypes = X.dtypes.astype(str)
@@ -230,11 +247,9 @@ class lgt:
             setattr(self, i, j)
 
         self.init_tsp()
-        if record:
-            recorder.from_m(self)
+        flow_IO().from_m(self)
         self.init_bintool()
         self.init_basic()
-
 
     def binning_cnt(self):
         return pd.Series({i: len(j) for i, j in self.binning_tools.items()})
@@ -265,7 +280,7 @@ class lgt:
         for i in cols:
             kwargs["x"] = self.X[i]
             try:
-                self.binning_tools[i] = binning.tick(**{**lgt.default_kwargs, **kwargs})
+                self.binning_tools[i] = binning.tick(**{**model_flow.default_kwargs, **kwargs})
             except Exception as e:
                 if pass_error:
                     self.error_inds.add(i)
@@ -323,13 +338,13 @@ class lgt:
                 if _remain_tick == False:
                     self.binning_tools[i] = \
                         binning.binning(
-                            **{**lgt.default_kwargs,
+                            **{**model_flow.default_kwargs,
                                **kwargs,
                                "func": fit_func})
                 else:
                     self.binning_tools[i]. result = \
                         self.binning_tools[i]. calculate(
-                            **{**lgt.default_kwargs,
+                            **{**model_flow.default_kwargs,
                                **kwargs,
                                "func": fit_func})
 
@@ -353,7 +368,7 @@ class lgt:
                   "binning_result",
         ]
         _kw = deepcopy({i: self.__dict__[i] for i in _items})
-        _t = lgt(X = x, Y = y, record = False, **_kw)
+        _t = model_flow(X = x, Y = y, record = False, **_kw)
         _t.reset_info()
         _t.fit()
         return _t
@@ -384,7 +399,7 @@ class lgt:
                     ):
         if labels is None:
             labels = [str(i + 1) for i in range(len(conds))]
-        self.binning_labels = labels
+        self.sub_labels = labels
         if cols is None:
             cols = self.binning_tools.keys()
         subs = self.subobj_condition(conds = conds, labels = labels)
@@ -443,7 +458,7 @@ class lgt:
         _ent = self.entL
         _dfs = list()
         for i in _ent.index:
-            _df = recorder.add_porp_lift(self.binning_tools[i].\
+            _df = flow_IO.add_porp_lift(self.binning_tools[i].\
                                     result.reset_name("区间").reset_name("number"))
             _df["指标"] = i
             _df["区分度"] = _ent.loc[i]
@@ -561,7 +576,7 @@ class lgt:
 
     def var_find(self, path = None, draw = False):
         if path is None:
-            path = self.recorder.binning_excel_path
+            path = self.flow_IO.binning_excel_path
         be = binning_excel(log = self)
         b = be.var_find()
         b1 = pd.concat(b, axis = 1)
@@ -605,7 +620,7 @@ class model_result:
                     standard_woe,
                     binning_tools,
                     train_cond=None, 
-                    lgt=None
+                    model_flow=None
     ):
         res = dict()
         res['model'] = model
@@ -615,7 +630,7 @@ class model_result:
         res['trans'] = binning_tools.sub(cols).write_pattern()
         res['cond'] = train_cond
         self.result = res
-        self.m = lgt
+        self.m = model_flow
         return self.load_func()
 
     def load_xy(self, x, y):
@@ -658,7 +673,7 @@ class model_result:
         res = dict()
         res["KS"] = KS(y, _score)
         res["AUC"] = roc_auc_score(y, _score)
-        res["binning"] = recorder.add_porp_lift(_b)
+        res["binning"] = flow_IO.add_porp_lift(_b)
         return res
 
 
@@ -672,7 +687,7 @@ class binning_excel:
         assert not(path is None and log is None)
         import xlrd
         if path is None:
-            path = log.recorder.binning_excel_path
+            path = log.flow_IO.binning_excel_path
         self.path = path
         data = xlrd.open_workbook(path) #打开demp.xlsx文件
         sheet_names = data.sheet_names()  #获取所有sheets名

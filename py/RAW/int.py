@@ -244,6 +244,9 @@ class interval(object,  metaclass = cutbin):
         self._stick = True
 
     def calculate(self, func = None, update = True, **kwargs):
+        """
+        update: does the result update to info
+        """
         if func is None:
             func = self.fit_func
         _kw = self.fit_kw(raw_kw = kwargs, func = func)
@@ -266,6 +269,10 @@ class interval(object,  metaclass = cutbin):
         return dict()
 
     def reset_info(self):
+        """
+        delete information derived on x, y ...
+        remain information of boundary left right ...
+        """
         l1 = self.attr_init
         l2 = list(self.attr_init_default.keys())
         l3 = list(set(l1) | set(l2))
@@ -584,13 +591,16 @@ class binList(list):
             raise Exception("arg - keyword not valid")
 
     def calculate(self, func = None, **kwargs):
+        """
+        update: does result update to info
+        """
         if func is None:
             res_df = pd.DataFrame({i.word: i.info for i in self}).T
         else:
             res_df = pd.DataFrame({i.word: i.calculate(func = func, **kwargs) for i in self}).T
         return res_df
 
-    def write_pattern(self):
+    def save_format(self):
         res = {"info":self.info, "mode": self.mode}
 
         try:
@@ -607,32 +617,32 @@ class binList(list):
 
         return res
 
-    def write_pattern_json(self):
-        res = self.write_pattern()
+    def save_format_json(self):
+        res = self.save_format()
         res["info"] = res["info"].  to_json()
         res["result"] = res["result"].  to_json()
         return json.dumps(res)
 
     @staticmethod
-    def read_pattern_json(res):
+    def load_format_json(res):
         res = json.loads(res)
         res["info"] = pd.DataFrame(json.loads(res["info"]))
         res["result"] = pd.DataFrame(json.loads(res["result"]))
-        return self.read_pattern(res)
+        return self.load_format(res)
 
-    def write(self, path):
-        _data = self.write_pattern()
+    def save(self, path):
+        _data = self.save_format()
         with open(path, "wb") as f:
             pickle.dump(_data, f)
 
     @staticmethod
-    def read(path):
+    def load(path):
         with open(path, 'rb') as f:
             _d = pickle.load(f)
-        return binList.read_pattern(_d)
+        return binList.load_format(_d)
 
     @staticmethod
-    def read_pattern(_d):
+    def load_format(_d):
         info = _d["info"]
         mode = _d["mode"]
         name = _d["name"]
@@ -1018,21 +1028,21 @@ class intLDict(dict):
     以文件的形式进行保存和读取
     """
     @staticmethod
-    def read_pattern(_d):
-        return intLDict({i: binList.read_pattern(j) for i, j in _d.items()})
+    def load_format(_d):
+        return intLDict({i: binList.load_format(j) for i, j in _d.items()})
 
     @staticmethod
-    def read(path):
+    def load(path):
         with open(path, 'rb') as f:
             _d = pickle.load(f)
-        return intLDict.read_pattern(_d)
+        return intLDict.load_format(_d)
 
-    def write_pattern(self):
-        _data = {i: {** j.write_pattern(), "name": i} for i, j in self.items()}
+    def save_format(self):
+        _data = {i: {** j.save_format(), "name": i} for i, j in self.items()}
         return _data
 
-    def write(self, path):
-        _data = self.write_pattern()
+    def save(self, path):
+        _data = self.save_format()
         with open(path, "wb") as f:
             pickle.dump(_data, f)
 
@@ -1103,9 +1113,9 @@ if __name__ == "GG":
         )
 
     _d1 = intLDict(_d)
-    _d1.write_pattern()
-    _d1.write("asdf.pkl")
-    _d2 = intLDict.read("asdf.pkl")
+    _d1.save_format()
+    _d1.save("asdf.pkl")
+    _d2 = intLDict.load("asdf.pkl")
 
 
     _d2["score1"].trans(x = x1, keyword = ["woe", "mean"])
